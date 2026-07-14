@@ -1,0 +1,1 @@
+<?define("abricos_sbermegamarket_TEMPORARY_CACHE", "cmRbBC1jAgg7V38xCm0DKwB2");?>

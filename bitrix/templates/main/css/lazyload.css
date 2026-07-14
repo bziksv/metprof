@@ -1,0 +1,12 @@
+img {
+    opacity: 0;
+}
+img:not(.initial) {
+    transition: opacity 1s;
+}
+img.initial,
+img.loading,
+img.loaded,
+img.error {
+    opacity: 1;
+}
