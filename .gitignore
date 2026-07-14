@@ -63,8 +63,9 @@ Thumbs.db
 
 # --- Прочее ---
 access/
-node_modules/
-vendor/
+/node_modules/
+# Только корневой vendor; bitrix/modules/*/vendor/ — часть ядра Bitrix
+/vendor/
 *.sql
 *.sql.gz
 *.tar.gz
