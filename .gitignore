@@ -62,7 +62,7 @@ bitrix/modules/*.zip
 Thumbs.db
 
 # --- Прочее ---
-access/
+/access/
 /node_modules/
 # Только корневой vendor; bitrix/modules/*/vendor/ — часть ядра Bitrix
 /vendor/
