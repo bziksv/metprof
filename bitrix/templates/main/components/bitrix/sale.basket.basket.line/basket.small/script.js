@@ -186,6 +186,9 @@ BitrixSmallCart.prototype = {
 		data.siteId = this.siteId;
 		data.templateName = this.templateName;
 		data.arParams = this.arParams;
+		data.arParams.CACHE_TYPE = 'N';
+		data.arParams.CACHE_TIME = '0';
+		data.arParams.AJAX = 'Y';
 		BX.ajax({
 			url: this.ajaxPath,
 			method: 'POST',

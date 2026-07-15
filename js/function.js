@@ -1,12 +1,28 @@
 
 function replaseBasketTop() {
+    // Обновляет оба виджета (header__cart + hmobile__cart) через BitrixSmallCart.refreshCart
+    if (typeof BX !== 'undefined' && BX.onCustomEvent) {
+        BX.onCustomEvent('OnBasketChange');
+        return;
+    }
+
+    // Fallback без BX: только разметка ссылок корзины
     $.ajax({
         url: '/ajax/basket.php',
         type: 'get',
+        cache: false,
         success: function (data) {
-            $('.header__cart').replaceWith(data);
+            var $tmp = $('<div>').append($.parseHTML(data, document, false));
+            var $newDesktop = $tmp.find('.header__cart').first();
+            if ($newDesktop.length && $('.header__cart').length) {
+                $('.header__cart').first().replaceWith($newDesktop);
+            }
+            var num = $newDesktop.find('.cart__number').first().text();
+            if (num !== '' && $('.hmobile__cart .cart__number').length) {
+                $('.hmobile__cart .cart__number').text(num);
+            }
         }
-    })
+    });
 }
 
 
