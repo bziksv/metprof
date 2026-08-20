@@ -645,6 +645,7 @@
 		var lastPhoneDigits = phoneDigits(phoneInput.value);
 		var claimMode = false;
 		var lastLookupData = null;
+		var dismissedDupPhone = '';
 		var pollTimer = null;
 		if (lookupOnly) {
 			verifyBtn.style.display = 'none';
@@ -654,7 +655,8 @@
 			var hasContent = (statusEl.textContent || '').trim() !== ''
 				|| accountsEl.children.length > 0
 				|| wait.style.display !== 'none'
-				|| (!lookupOnly && verifyBtn.style.display !== 'none');
+				|| (!lookupOnly && verifyBtn.style.display !== 'none')
+				|| verifyBtn.style.display !== 'none';
 			if (linksEl && linksEl.style.display !== 'none') {
 				hasContent = true;
 			}
@@ -673,21 +675,37 @@
 			accountsEl.style.display = '';
 		}
 
+		function showDismissedDuplicateUi(data) {
+			claimMode = true;
+			statusEl.className = 'prime-phoneauth-reg__status is-bad';
+			statusEl.textContent = (data && (data.message || data.error))
+				|| cfg.duplicateMessage
+				|| 'Номер уже используется.';
+			setAccounts((data && data.accounts) || []);
+			if (linksEl) linksEl.style.display = '';
+			verifyBtn.textContent = 'Подтвердить звонком';
+			verifyBtn.style.display = '';
+			verifyBtn.disabled = false;
+			phoneInput.classList.add('is-invalid');
+			syncRegBoxVisibility();
+		}
+
 		function openRegDuplicatePopup(data, phone, force) {
 			clearRegDuplicateNotice();
+			if (document.querySelector('.prime-phoneauth-modal')) {
+				return;
+			}
+			// После закрытия — не молчать: показываем блок с кнопкой снова открыть окно
+			if (!force && dismissedDupPhone === phone) {
+				showDismissedDuplicateUi(data);
+				return;
+			}
 			statusEl.textContent = '';
 			statusEl.className = 'prime-phoneauth-reg__status';
 			setAccounts([]);
 			if (linksEl) linksEl.style.display = 'none';
 			verifyBtn.style.display = 'none';
 			syncRegBoxVisibility();
-			if (document.querySelector('.prime-phoneauth-modal')) {
-				return;
-			}
-			// После Esc/крестика не всплывать снова, пока номер не сменят или не нажмут «Продолжить»
-			if (!force && lastModalPhone === phone) {
-				return;
-			}
 			lastModalPhone = phone;
 			openClaimModal(false);
 		}
@@ -781,6 +799,7 @@
 			var title = data.status === 'taken' || ((data.accounts || []).length === 1)
 				? 'Номер уже используется'
 				: 'Несколько аккаунтов';
+			dismissedDupPhone = '';
 			showDuplicate(data.message || data.error, data.accounts, title, {
 				lock: true,
 				autoClaim: !!autoClaim,
@@ -788,9 +807,16 @@
 					return postForm(cfg.startUrl, { phone: phoneInput.value, register: 'Y', claim: 'Y' });
 				},
 				onConfirmed: function (token) {
+					dismissedDupPhone = '';
 					tokenInp.value = token;
 					markConfirmed();
 					setAccounts([]);
+				},
+				onClose: function () {
+					dismissedDupPhone = phoneInput.value;
+					if (lastLookupData) {
+						showDismissedDuplicateUi(lastLookupData);
+					}
 				},
 				onLogin: function () {
 					switchToLogin();
@@ -888,6 +914,8 @@
 			var now = phoneDigits(phoneInput.value);
 			if (now === lastPhoneDigits) return;
 			lastPhoneDigits = now;
+			dismissedDupPhone = '';
+			lastModalPhone = '';
 			resetConfirm();
 			statusEl.className = 'prime-phoneauth-reg__status';
 			statusEl.textContent = '';
@@ -895,12 +923,11 @@
 			if (linksEl) linksEl.style.display = 'none';
 			verifyBtn.style.display = 'none';
 			lastLookupPhone = '';
-			lastModalPhone = '';
 			lookupNow();
 		});
 
 		verifyBtn.addEventListener('click', function () {
-			if (claimMode) {
+			if (claimMode || (lastLookupData && phoneDuplicateActive(lastLookupData))) {
 				openClaimModal(true);
 				return;
 			}
