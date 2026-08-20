@@ -151,14 +151,15 @@ if($cntBasketItems > 0):
 				</label>
 			</div>
 
-			<div class="agent">
+			<div class="agent agent--consent">
 				<label>
 					<input type="checkbox" name="rule" id="rule" value="Y"/>
 					<span>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.</span>
 				</label>
+				<div class="agent__error" data-role="rule-error" hidden>Отметьте согласие с политикой обработки персональных данных.</div>
 			</div>
 
-			<input type="submit" class="registrate" value="<?echo GetMessage("STOF_NEXT_STEP")?>" disabled>
+			<input type="submit" class="registrate" value="<?echo GetMessage("STOF_NEXT_STEP")?>">
 			<input type="hidden" name="do_register" value="Y">
 
 		</div>
@@ -172,16 +173,6 @@ if($cntBasketItems > 0):
 
 <script>
 	$(function(){
-
-		$(function(){
-			$('#rule').change(function(){
-				$('.registrate').attr('disabled',$(this).prop('checked') ? false : true );
-			});
-		});
-
-		$('.registrate').click(function(){
-			// phone already in USER_PERSONAL_PHONE
-		});
 
 		(function () {
 			var authForm = document.forms.order_auth_form;
@@ -231,6 +222,9 @@ if($cntBasketItems > 0):
 		(function () {
 			var form = document.forms.order_reg_form;
 			if (!form) return;
+			var rule = form.querySelector('#rule');
+			var ruleBox = form.querySelector('.agent--consent');
+			var ruleError = form.querySelector('[data-role="rule-error"]');
 
 			function phoneDigits(value) {
 				var digits = String(value || '').replace(/\D/g, '');
@@ -250,10 +244,16 @@ if($cntBasketItems > 0):
 				inp.classList.toggle('is-invalid', !!on);
 			}
 
+			function markRule(on) {
+				if (ruleBox) ruleBox.classList.toggle('is-invalid', !!on);
+				if (ruleError) ruleError.hidden = !on;
+			}
+
 			function clearAll() {
 				form.querySelectorAll('.is-invalid').forEach(function (el) {
 					el.classList.remove('is-invalid');
 				});
+				markRule(false);
 			}
 
 			function validate() {
@@ -307,8 +307,16 @@ if($cntBasketItems > 0):
 					if (!first) first = !pw.length ? password : confirm;
 				}
 
+				if (rule && !rule.checked) {
+					markRule(true);
+					if (!first) first = rule;
+				}
+
 				if (first) {
 					try { first.focus(); } catch (e) {}
+					if (first === rule && ruleBox) {
+						try { ruleBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {}
+					}
 					return false;
 				}
 				return true;
@@ -326,6 +334,12 @@ if($cntBasketItems > 0):
 					e.target.classList.remove('is-invalid');
 				}
 			}, true);
+
+			if (rule) {
+				rule.addEventListener('change', function () {
+					if (rule.checked) markRule(false);
+				});
+			}
 
 			if (window.jQuery && form.USER_PERSONAL_PHONE) {
 				try {
