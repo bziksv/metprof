@@ -566,6 +566,11 @@
 				var emailInput = inputs[i];
 				if (!isEmailInput(emailInput) || contextFor(emailInput) !== 'signup') continue;
 				var email = String(emailInput.value || '').trim();
+				emailInput.value = email;
+				var loginMirror = form.querySelector('input[name="USER_LOGIN"], input[name="REGISTER[LOGIN]"]');
+				if (loginMirror && (loginMirror.type === 'hidden' || !String(loginMirror.value || '').trim() || loginMirror.value.indexOf('@') !== -1)) {
+					loginMirror.value = email;
+				}
 				if (!looksComplete(email)) continue;
 
 				if (cfg.enabled !== false && policyEnabledFor('signup') && !isAllowed(email)) {

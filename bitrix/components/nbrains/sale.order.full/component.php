@@ -222,6 +222,14 @@ if (!$USER->IsAuthorized())
 		}
 		elseif ($arResult["POST"]["do_register"] == "Y" && $arResult["AUTH"]["new_user_registration"] == "Y")
 		{
+			foreach (array("NEW_NAME", "NEW_LAST_NAME", "NEW_EMAIL", "NEW_LOGIN", "USER_PERSONAL_PHONE", "WORK_PHONE") as $trimKey)
+			{
+				if (isset($arResult["POST"][$trimKey]))
+					$arResult["POST"][$trimKey] = trim((string)$arResult["POST"][$trimKey]);
+				if (isset($arResult["POST"]["~".$trimKey]))
+					$arResult["POST"]["~".$trimKey] = trim((string)$arResult["POST"]["~".$trimKey]);
+			}
+
 			if (strlen($arResult["POST"]["NEW_NAME"]) <= 0)
 				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG_NAME").".<br />";
 

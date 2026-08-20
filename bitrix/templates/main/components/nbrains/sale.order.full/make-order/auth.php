@@ -276,6 +276,7 @@ if($cntBasketItems > 0):
 				}
 
 				var emailVal = email ? String(email.value || '').trim() : '';
+				if (email) email.value = emailVal;
 				var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(emailVal);
 				var policyOk = true;
 				if (typeof window.primeAlertsIsEmailAllowed === 'function') {
