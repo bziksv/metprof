@@ -1,38 +1,149 @@
 
-function replaseBasketTop() {
-    // Обновляет оба виджета (header__cart + hmobile__cart) через BitrixSmallCart.refreshCart
-    if (typeof BX !== 'undefined' && BX.onCustomEvent) {
-        BX.onCustomEvent('OnBasketChange');
+function metprofUpdateCartWidgets(count, priceText) {
+    var countValue = String(count);
+    var priceValue = priceText || '0 руб.';
+
+    document.querySelectorAll('.cart__number').forEach(function (el) {
+        el.textContent = countValue;
+    });
+
+    document.querySelectorAll('.cart__sum--numbers').forEach(function (el) {
+        el.textContent = priceValue;
+    });
+
+    document.querySelectorAll('.header__cart .cart__sum').forEach(function (el) {
+        el.style.display = '';
+    });
+}
+
+function metprofParseCartFromResponse(data) {
+    if (!data || typeof data !== 'string') {
+        return null;
+    }
+
+    var match = data.match(/<!--METPROF_CART:([\s\S]*?)-->/);
+    if (!match) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(match[1]);
+    } catch (e) {
+        return null;
+    }
+}
+
+function metprofApplyCartFromResponse(data, xhr) {
+    var cart = metprofParseCartFromResponse(data);
+
+    if (cart && cart.count !== undefined) {
+        metprofUpdateCartWidgets(cart.count, cart.price || '');
         return;
     }
 
-    // Fallback без BX: только разметка ссылок корзины
+    metprofApplyCartHeaders(xhr);
+}
+
+function metprofApplyCartHeaders(xhr) {
+    if (!xhr || typeof xhr.getResponseHeader !== 'function') {
+        return;
+    }
+
+    var count = xhr.getResponseHeader('X-Metprof-Cart-Count');
+    if (count === null || count === '') {
+        return;
+    }
+
+    var price = xhr.getResponseHeader('X-Metprof-Cart-Price');
+    metprofUpdateCartWidgets(count, price ? decodeURIComponent(price) : '');
+}
+
+function metprofLoadCartHeader(cartEl, url) {
+    if (!cartEl || !url) {
+        return;
+    }
+
     $.ajax({
-        url: '/ajax/basket.php',
-        type: 'get',
+        url: url,
+        type: 'GET',
         cache: false,
-        success: function (data) {
-            var $tmp = $('<div>').append($.parseHTML(data, document, false));
-            var $newDesktop = $tmp.find('.header__cart').first();
-            if ($newDesktop.length && $('.header__cart').length) {
-                $('.header__cart').first().replaceWith($newDesktop);
-            }
-            var num = $newDesktop.find('.cart__number').first().text();
-            if (num !== '' && $('.hmobile__cart .cart__number').length) {
-                $('.hmobile__cart .cart__number').text(num);
+        data: {
+            _: Date.now()
+        },
+        success: function (html) {
+            if (html && $.trim(html)) {
+                cartEl.innerHTML = html;
             }
         }
     });
+}
+
+function replaseBasketTop() {
+    metprofLoadCartHeader(
+        document.querySelector('header .header__bottom .bx-basket'),
+        '/ajax/basket-header.php'
+    );
+    metprofLoadCartHeader(
+        document.querySelector('header .hmobile .bx-basket'),
+        '/ajax/basket-header-mobile.php'
+    );
 }
 
 
 
 
 
+var addToBasketPending = {};
+
+function metprofIsBasketAddSuccess(response) {
+    return response === 'Товар успешно добавлен в корзину'
+        || response.indexOf('Товар уже в корзине') === 0;
+}
+
+function metprofMarkAddedToCart(el) {
+    if (!el) {
+        return;
+    }
+
+    var $el = $(el);
+
+    if ($el.hasClass('polimer-search-dropdown__action--cart')) {
+        $el.addClass('is-in-cart').attr('title', 'Перейти в корзину');
+        $el.off('click').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = '/personal/cart/';
+        });
+        return;
+    }
+
+    var $cartBtn = $el.closest('.add2cart');
+    if ($cartBtn.length) {
+        $cartBtn.addClass('is-in-cart');
+        $cartBtn.find('.txt2').text('В корзине');
+        $cartBtn.find('.txt1').text('В корзине');
+        $cartBtn.attr('onclick', 'window.location.href="/personal/cart/"');
+        return;
+    }
+
+    $el.text('В корзине');
+    $el.attr('onclick', 'window.location.href="/personal/cart/"');
+}
+
 function addToBasket2(idel, quantity,el,type) {
+        if (addToBasketPending[idel]) {
+            return false;
+        }
+
+        quantity = parseFloat(quantity);
+        if (!quantity || !isFinite(quantity) || quantity <= 0) {
+            quantity = 1;
+        }
 
 		var minCount = parseFloat($('#order-table').attr('count-min'));
         var fullCount = parseFloat($('#order-table').attr('count-full'));
+
+        addToBasketPending[idel] = true;
 
         $.ajax({
             url: '/ajax/maxQuantity.php?id='+idel,
@@ -45,11 +156,13 @@ function addToBasket2(idel, quantity,el,type) {
             }
 
             if(fullCount < minCount && type == 6) {
+                delete addToBasketPending[idel];
                 alertify.error("Минимальный заказ "+ minCount +"м2");
 
                 return false;
             }
 
+            var props;
             if(fullCount >= minCount && type == 6){
 
                     var props = [
@@ -69,6 +182,9 @@ function addToBasket2(idel, quantity,el,type) {
             }
 
             quantity = parseFloat(quantity);
+            if (!quantity || !isFinite(quantity) || quantity <= 0) {
+                quantity = 1;
+            }
 
             $href = "/ajax/add.php";
             var _result = true;
@@ -81,17 +197,29 @@ function addToBasket2(idel, quantity,el,type) {
                         type:type,
                         props:props
                     },
-                    success: function (data) {
-                        if (data == 'Товар успешно добавлен в корзину') {
-                            replaseBasketTop();
-                            alertify.success(data);
-                            if(el){
-                                $(el).text('Перейти в корзину');
-                                $(el).attr('onclick','window.location.href="/personal/cart/"');
+                    complete: function () {
+                        delete addToBasketPending[idel];
+                    },
+                    success: function (data, textStatus, xhr) {
+                        var response = $.trim(String(data).replace(/<!--METPROF_CART:[\s\S]*?-->/, ''));
+                        metprofApplyCartFromResponse(data, xhr);
+                        replaseBasketTop();
+                        if (metprofIsBasketAddSuccess(response)) {
+                            if (window.alertify) {
+                                if (response === 'Товар успешно добавлен в корзину') {
+                                    alertify.success(response);
+                                } else {
+                                    alertify.message(response);
+                                }
                             }
-                            yaCounter48970379.reachGoal('korzina250720181506');
+                            metprofMarkAddedToCart(el);
+                            if (response === 'Товар успешно добавлен в корзину' && typeof yaCounter48970379 !== 'undefined') {
+                                yaCounter48970379.reachGoal('korzina250720181506');
+                            }
                         } else {
-                            alertify.error(data);
+                            if (window.alertify) {
+                                alertify.error(response);
+                            }
                             _result = false;
                         }
 
@@ -102,6 +230,9 @@ function addToBasket2(idel, quantity,el,type) {
 
                     }
                 });
+            },
+            error: function () {
+                delete addToBasketPending[idel];
             }
         });
 }
@@ -200,7 +331,13 @@ function UpdateBigBasket(){
         success: function(msg){
             if(msg!="error")
             {
-                $(".page_content").html(msg);
+                var $target = $(".page_content");
+                if ($target.length) {
+                    $target.html(msg);
+                }
+                if (typeof replaseBasketTop === 'function') {
+                    replaseBasketTop();
+                }
             }
             else
             {
@@ -219,6 +356,9 @@ function deleteBasket(){
             if(msg!="error")
             {
                 UpdateBigBasket();
+                if (typeof metprofUpdateCartWidgets === 'function') {
+                    metprofUpdateCartWidgets(0, '0 руб.');
+                }
             }
             else
             {

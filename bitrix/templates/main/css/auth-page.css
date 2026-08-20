@@ -1,0 +1,266 @@
+/* Страницы авторизации / регистрации / восстановления пароля */
+
+.page_content:has(.auth-page) {
+	padding-bottom: 80px !important;
+}
+
+.auth-page-wrap {
+	margin-bottom: 60px;
+}
+
+.auth-page {
+	display: flex;
+	justify-content: center;
+	padding: 0 15px;
+}
+
+.auth-page .bx-authform {
+	width: 100%;
+	max-width: 460px;
+	margin: 0;
+	padding: 32px 36px 28px;
+	border: 1px solid var(--pa-border, #7cadd9);
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 8px 28px rgba(4, 100, 187, 0.1);
+	box-sizing: border-box;
+}
+
+.auth-page .bx-authform .bx-title {
+	margin: 0 0 22px;
+	padding: 0;
+	font: 500 22px/1.35 'Fira Sans', sans-serif;
+	text-align: center;
+	color: #333;
+}
+
+.auth-page .bx-authform .auth .prime-phoneauth-panel {
+	display: none;
+}
+
+.auth-page .bx-authform .auth .prime-phoneauth-panel.is-active {
+	display: block;
+}
+
+.auth-page .bx-authform .auth .prime-phoneauth-tabs {
+	width: 100%;
+	max-width: 100%;
+}
+
+.auth-page .bx-authform-formgroup-container .bx-filter-param-text {
+	margin-left: 0;
+}
+
+
+.auth-page .bx-authform .prime-phoneauth-tabs {
+	margin-bottom: 22px;
+	border-width: 2px;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.auth-page .bx-authform .prime-phoneauth-tabs button {
+	min-height: 42px;
+	font: 600 13px/1.2 'Fira Sans', sans-serif;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.auth-page .bx-authform-formgroup-container {
+	margin-bottom: 18px;
+}
+
+.auth-page .bx-authform-label-container {
+	margin-bottom: 6px;
+	font: 500 13px/1.3 'Fira Sans', sans-serif;
+	color: #5a6c77;
+}
+
+.auth-page .bx-authform-input-container input[type="text"],
+.auth-page .bx-authform-input-container input[type="tel"],
+.auth-page .bx-authform-input-container input[type="password"],
+.auth-page .bx-authform-input-container input[type="email"] {
+	display: block;
+	width: 100%;
+	height: 44px;
+	margin: 0;
+	padding: 0 14px;
+	border: 1px solid #ccd5db;
+	border-radius: 8px;
+	background: #f8fafc;
+	font: 400 15px/44px 'Fira Sans', sans-serif;
+	color: #333;
+	outline: none;
+	box-sizing: border-box;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.auth-page .bx-authform-input-container input:focus {
+	border-color: var(--pa-accent, #0464bb);
+	background: #fff;
+	box-shadow: 0 0 0 3px rgba(4, 100, 187, 0.12);
+}
+
+.auth-page .bx-authform-input-container input.is-invalid,
+.auth-page .bx-authform-input-container input.err,
+.auth-page .bx-authform-input-container input:user-invalid {
+	border-color: #d64545;
+	background: #fff5f5;
+	box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15);
+}
+
+.auth-page .bx-authform-input-container input.is-invalid:focus,
+.auth-page .bx-authform-input-container input.err:focus {
+	border-color: #d64545;
+	box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.22);
+}
+
+.auth-page .bx-authform-formgroup-container .checkbox {
+	margin: 0;
+}
+
+.auth-page .bx-authform-formgroup-container .bx-filter-param-label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin: 0;
+	cursor: pointer;
+	font: 400 13px/1.4 'Fira Sans', sans-serif;
+	color: #555;
+}
+
+.auth-page .bx-authform-formgroup-container .bx-filter-param-label input[type="checkbox"] {
+	flex: 0 0 auto;
+	width: 16px;
+	height: 16px;
+	margin: 2px 0 0;
+	accent-color: var(--pa-accent, #0464bb);
+}
+
+.auth-page .bx-authform-formgroup-container input[type="submit"],
+.auth-page .bx-authform-formgroup-container .btn.btn-primary {
+	display: block;
+	width: 100%;
+	height: 46px;
+	margin: 4px 0 0;
+	padding: 0 16px;
+	border: none;
+	border-radius: 8px;
+	background: var(--pa-accent, #0464bb);
+	font: 600 15px/46px 'Fira Sans', sans-serif;
+	color: #fff;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: border-box;
+	transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.auth-page .bx-authform-formgroup-container input[type="submit"]:hover,
+.auth-page .bx-authform-formgroup-container .btn.btn-primary:hover {
+	background: #1b94e9;
+	box-shadow: 0 4px 14px rgba(4, 100, 187, 0.35);
+}
+
+.auth-page .bx-authform-formgroup-container input[type="submit"]:active,
+.auth-page .bx-authform-formgroup-container .btn.btn-primary:active {
+	transform: translateY(1px);
+}
+
+.auth-page .bx-authform hr.bxe-light {
+	margin: 22px 0 18px;
+	border: 0;
+	border-top: 1px solid #e8edf2;
+}
+
+.auth-page .bx-authform-link-container {
+	margin: 0 0 12px;
+	padding: 0;
+	font: 400 14px/1.5 'Fira Sans', sans-serif;
+	text-align: center;
+	color: #555;
+}
+
+.auth-page .bx-authform-link-container:last-child {
+	margin-bottom: 0;
+}
+
+.auth-page .bx-authform-link-container a {
+	border-bottom: 1px solid rgba(4, 100, 187, 0.35);
+	font-weight: 600;
+	color: var(--pa-accent, #0464bb);
+	text-decoration: none;
+}
+
+.auth-page .bx-authform-link-container a:hover {
+	border-color: #1b94e9;
+	color: #1b94e9;
+}
+
+.auth-page .bx-authform-content-container,
+.auth-page .bx-authform-note-container,
+.auth-page .bx-authform-description-container {
+	font: 400 14px/1.5 'Fira Sans', sans-serif;
+	color: #5a6c77;
+}
+
+.auth-page .bx-authform .alert {
+	margin-bottom: 18px;
+	padding: 12px 14px;
+	border-radius: 8px;
+	font: 400 14px/1.45 'Fira Sans', sans-serif;
+}
+
+.auth-page .bx-authform .alert-danger {
+	color: #842029;
+	background: #f8d7da;
+	border: 1px solid #f5c2c7;
+}
+
+.auth-page .bx-authform .alert-success {
+	color: #0f5132;
+	background: #d1e7dd;
+	border: 1px solid #badbcc;
+}
+
+.auth-page .bx-authform .prime-phoneauth-panel[data-panel="phone"] .prime-phoneauth-wait {
+	margin-top: 8px;
+	padding: 14px 16px;
+	border: 1px solid var(--pa-border, #7cadd9);
+	border-radius: 8px;
+	background: var(--pa-bg, #f5f8fc);
+	font-size: 14px;
+	line-height: 1.45;
+}
+
+.auth-page .bx-authform .prime-auth-social {
+	padding: 8px 0 4px;
+}
+
+.auth-page .bx-authform .prime-auth-social__note {
+	margin-top: 16px;
+	font-size: 13px;
+	color: #666;
+}
+
+@media screen and (max-width: 659px) {
+	.page_content:has(.auth-page) {
+		padding-bottom: 48px !important;
+	}
+
+	.auth-page-wrap {
+		margin-bottom: 36px;
+	}
+
+	.auth-page .bx-authform {
+		padding: 24px 20px 22px;
+		border-radius: 10px;
+	}
+
+	.auth-page .bx-authform .bx-title {
+		font-size: 19px;
+	}
+
+	.auth-page .bx-authform .prime-phoneauth-tabs--3 button {
+		font-size: 11px;
+		padding: 10px 4px;
+	}
+}

@@ -1,5 +1,9 @@
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
+if (class_exists('\Bitrix\Main\Composite\Helper')) {
+	\Bitrix\Main\Composite\Helper::setEnabled(false);
+}
+
 $APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket.small", Array(
     "HIDE_ON_BASKET_PAGES" => "N",
     "PATH_TO_BASKET" => SITE_DIR."personal/cart/",

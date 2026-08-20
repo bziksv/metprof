@@ -1,0 +1,477 @@
+<?php
+/**
+ * Bitrix Framework
+ * @package bitrix
+ * @subpackage main
+ * @copyright 2001-2024 Bitrix
+ */
+
+use Bitrix\Main\Loader;
+use Bitrix\Main\Web\Json;
+
+$primeRegEmailExistsNotice = '';
+if (Loader::includeModule('prime.alerts')) {
+	$primeRegEmailExistsNotice = \Prime\Alerts\EmailLookup::getExistsNoticeHtml();
+}
+
+/**
+ * Bitrix vars
+ * @global CMain $APPLICATION
+ * @var array $arParams
+ * @var array $arResult
+ * @var CBitrixComponentTemplate $this
+ */
+
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+
+if($arResult["SHOW_SMS_FIELD"] == true)
+{
+	CJSCore::Init('phone_auth');
+}
+
+//one css for all system.auth.* forms
+$APPLICATION->SetAdditionalCSS("/bitrix/css/main/system.auth/flat/style.css");
+\Bitrix\Main\Page\Asset::getInstance()->addString(
+	'<link rel="stylesheet" href="/bitrix/templates/main/css/auth-page.css?v=1.0.2">',
+	false,
+	\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+);
+?>
+<div class="auth-page-wrap">
+<div class="auth-page">
+<div class="bx-authform">
+
+<h3 class="bx-title"><?=GetMessage("AUTH_REGISTER")?></h3>
+
+<noindex>
+
+<?
+if(!empty($arParams["~AUTH_RESULT"]["MESSAGE"])):
+	$text = str_replace(array("<br>", "<br />"), "\n", $arParams["~AUTH_RESULT"]["MESSAGE"]);
+?>
+	<div class="alert <?=($arParams["~AUTH_RESULT"]["TYPE"] == "OK"? "alert-success":"alert-danger")?>"><?=nl2br(htmlspecialcharsbx($text))?></div>
+<?endif?>
+
+<?if($arResult["SHOW_EMAIL_SENT_CONFIRMATION"]):?>
+	<div class="alert alert-success"><?echo GetMessage("AUTH_EMAIL_SENT")?></div>
+<?endif?>
+
+<?if(!$arResult["SHOW_EMAIL_SENT_CONFIRMATION"] && $arResult["USE_EMAIL_CONFIRMATION"] === "Y"):?>
+	<div class="alert alert-warning"><?echo GetMessage("AUTH_EMAIL_WILL_BE_SENT")?></div>
+<?endif?>
+
+<?if($arResult["SHOW_SMS_FIELD"] == true):?>
+
+<form method="post" action="<?=$arResult["AUTH_URL"]?>" name="regform">
+
+	<input type="hidden" name="SIGNED_DATA" value="<?=htmlspecialcharsbx($arResult["SIGNED_DATA"])?>" />
+
+	<div class="bx-authform-formgroup-container">
+		<div class="bx-authform-label-container"><span class="bx-authform-starrequired">*</span><?echo GetMessage("main_register_sms_code")?></div>
+		<div class="bx-authform-input-container">
+			<input type="text" name="SMS_CODE" maxlength="255" value="<?=htmlspecialcharsbx($arResult["SMS_CODE"] ?? '')?>" autocomplete="off" />
+		</div>
+	</div>
+
+	<div class="bx-authform-formgroup-container">
+		<input type="submit" class="btn btn-primary" name="code_submit_button" value="<?echo GetMessage("main_register_sms_send")?>" />
+	</div>
+
+</form>
+
+<script>
+new BX.PhoneAuth({
+	containerId: 'bx_register_resend',
+	errorContainerId: 'bx_register_error',
+	interval: <?=$arResult["PHONE_CODE_RESEND_INTERVAL"]?>,
+	data:
+		<?= Json::encode([
+			'signedData' => $arResult["SIGNED_DATA"],
+		]) ?>,
+	onError:
+		function(response)
+		{
+			var errorNode = BX('bx_register_error');
+			errorNode.innerHTML = '';
+			for(var i = 0; i < response.errors.length; i++)
+			{
+				errorNode.innerHTML = errorNode.innerHTML + BX.util.htmlspecialchars(response.errors[i].message) + '<br />';
+			}
+			errorNode.style.display = '';
+		}
+});
+</script>
+
+<div id="bx_register_error" style="display:none" class="alert alert-danger"></div>
+
+<div id="bx_register_resend"></div>
+
+<?elseif(!$arResult["SHOW_EMAIL_SENT_CONFIRMATION"]):?>
+
+	<form method="post" action="<?=$arResult["AUTH_URL"]?>" name="bform" enctype="multipart/form-data" novalidate>
+		<input type="hidden" name="AUTH_FORM" value="Y" />
+		<input type="hidden" name="TYPE" value="REGISTRATION" />
+		<input type="hidden" name="USER_LOGIN" value="<?=$arResult["USER_EMAIL"]?>" />
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container"><?=GetMessage("AUTH_NAME")?></div>
+			<div class="bx-authform-input-container">
+				<input type="text" name="USER_NAME" maxlength="255" value="<?=$arResult["USER_NAME"]?>" />
+			</div>
+		</div>
+		
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container"><?if($arResult["PERSONAL_PHONE_REQUIRED"]):?><span class="bx-authform-starrequired">*</span><?endif?><?echo GetMessage("main_register_phone_number")?></div>
+			<div class="bx-authform-input-container">
+				<input type="tel" class="phone ru_phone_check phone_check" name="USER_PERSONAL_PHONE" maxlength="255" placeholder="+7-___-___-__-__" autocomplete="tel" inputmode="tel" value="<?=$arResult["USER_PERSONAL_PHONE"]?>" <?if($arResult["PERSONAL_PHONE_REQUIRED"]):?>required data-prime-required="1"<?endif?>/>
+			</div>
+		</div>
+		
+		<?if($arResult["EMAIL_REGISTRATION"]):?>
+			<div class="bx-authform-formgroup-container">
+				<div class="bx-authform-label-container"><?if($arResult["EMAIL_REQUIRED"]):?><span class="bx-authform-starrequired">*</span><?endif?><?=GetMessage("AUTH_EMAIL")?></div>
+				<div class="bx-authform-input-container">
+					<input type="text" name="USER_EMAIL" maxlength="255" value="<?=$arResult["USER_EMAIL"]?>" <?if($arResult["EMAIL_REQUIRED"]):?>required data-prime-required="1"<?endif?>/>
+				</div>
+			</div>
+		<?endif?>
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container"><span class="bx-authform-starrequired">*</span><?=GetMessage("AUTH_PASSWORD_REQ")?></div>
+			<div class="bx-authform-input-container">
+			<?if($arResult["SECURE_AUTH"]):?>
+						<div class="bx-authform-psw-protected" id="bx_auth_secure" style="display:none">
+							<div class="bx-authform-psw-protected-desc"><span></span>
+								<?echo GetMessage("AUTH_SECURE_NOTE")?>
+							</div>
+						</div>
+				<script>
+					document.getElementById('bx_auth_secure').style.display = '';
+				</script>
+			<?endif?>
+				<input type="password" name="USER_PASSWORD" maxlength="255" value="<?=$arResult["USER_PASSWORD"]?>" autocomplete="off" required data-prime-required="1" />
+			</div>
+		</div>
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container"><span class="bx-authform-starrequired">*</span><?=GetMessage("AUTH_CONFIRM")?></div>
+			<div class="bx-authform-input-container">
+<?if($arResult["SECURE_AUTH"]):?>
+				<div class="bx-authform-psw-protected" id="bx_auth_secure_conf" style="display:none"><div class="bx-authform-psw-protected-desc"><span></span><?echo GetMessage("AUTH_SECURE_NOTE")?></div></div>
+
+<script>
+document.getElementById('bx_auth_secure_conf').style.display = '';
+</script>
+<?endif?>
+				<input type="password" name="USER_CONFIRM_PASSWORD" maxlength="255" value="<?=$arResult["USER_CONFIRM_PASSWORD"]?>" autocomplete="off" required data-prime-required="1" />
+			</div>
+		</div>
+
+<? if($arResult["USER_PROPERTIES"]["SHOW"] == "Y"):?>
+	<? foreach ($arResult["USER_PROPERTIES"]["DATA"] as $FIELD_NAME => $arUserField):?>
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container">
+				<?if ($arUserField["MANDATORY"]=="Y"):?>
+					<span class="bx-authform-starrequired">*</span>
+				<?endif?>
+				<?=$arUserField["EDIT_FORM_LABEL"]?>
+			</div>
+			<div class="bx-authform-input-container">
+				<?
+				$APPLICATION->IncludeComponent(
+					"bitrix:system.field.edit",
+					$arUserField["USER_TYPE"]["USER_TYPE_ID"],
+					array(
+						"bVarsFromForm" => $arResult["bVarsFromForm"],
+						"arUserField" => $arUserField,
+						"form_name" => "bform"
+					),
+					null,
+					array("HIDE_ICONS"=>"Y")
+				);
+				?>
+			</div>
+		</div>
+
+	<?endforeach;?>
+<?endif;?>
+<?if ($arResult["USE_CAPTCHA"] == "Y"):?>
+		<input type="hidden" name="captcha_sid" value="<?=$arResult["CAPTCHA_CODE"]?>" />
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container">
+				<span class="bx-authform-starrequired">*</span><?=GetMessage("CAPTCHA_REGF_PROMT")?>
+			</div>
+			<div class="bx-captcha"><img src="/bitrix/tools/captcha.php?captcha_sid=<?=$arResult["CAPTCHA_CODE"]?>" width="180" height="40" alt="CAPTCHA" /></div>
+			<div class="bx-authform-input-container">
+				<input type="text" name="captcha_word" maxlength="50" value="" autocomplete="off"/>
+			</div>
+		</div>
+
+<?endif?>
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container">
+			</div>
+			<div class="bx-authform-input-container">
+				<?$APPLICATION->IncludeComponent("bitrix:main.userconsent.request", "",
+					array(
+						"ID" => COption::getOptionString("main", "new_user_agreement", ""),
+						"IS_CHECKED" => "Y",
+						"AUTO_SAVE" => "N",
+						"IS_LOADED" => "Y",
+						"ORIGINATOR_ID" => $arResult["AGREEMENT_ORIGINATOR_ID"],
+						"ORIGIN_ID" => $arResult["AGREEMENT_ORIGIN_ID"],
+						"INPUT_NAME" => $arResult["AGREEMENT_INPUT_NAME"],
+						"REPLACE" => array(
+							"button_caption" => GetMessage("AUTH_REGISTER"),
+							"fields" => array(
+								rtrim(GetMessage("AUTH_NAME"), ":"),
+								rtrim(GetMessage("AUTH_LAST_NAME"), ":"),
+								rtrim(GetMessage("AUTH_LOGIN_MIN"), ":"),
+								rtrim(GetMessage("AUTH_PASSWORD_REQ"), ":"),
+								rtrim(GetMessage("AUTH_EMAIL"), ":"),
+							)
+						),
+					)
+				);?>
+			</div>
+		</div>
+		<noindex><p>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.</p></noindex>
+		<div class="bx-authform-formgroup-container">
+			<input type="submit" class="btn btn-primary" name="Register" value="<?=GetMessage("AUTH_REGISTER")?>" />
+		</div>
+
+		<hr class="bxe-light">
+
+		<div class="bx-authform-description-container">
+			<?echo $arResult["GROUP_POLICY"]["PASSWORD_REQUIREMENTS"];?>
+		</div>
+
+		<div class="bx-authform-description-container">
+			<span class="bx-authform-starrequired">*</span><?=GetMessage("AUTH_REQ")?>
+		</div>
+
+	</form>
+
+	<div class="bx-authform-link-container">
+		<a href="<?=$arResult["AUTH_AUTH_URL"]?>" rel="nofollow"><b><?=GetMessage("AUTH_AUTH")?></b></a>
+	</div>
+
+<script>
+	document.bform.USER_NAME.focus();
+
+	(function () {
+		var form = document.bform;
+		if (!form) return;
+
+		function phoneDigits(value) {
+			var digits = String(value || '').replace(/\D/g, '');
+			if (digits.length === 11 && (digits.charAt(0) === '7' || digits.charAt(0) === '8')) {
+				digits = digits.slice(1);
+			}
+			return digits;
+		}
+
+		function isValidRuPhone(value) {
+			var digits = phoneDigits(value);
+			return digits.length === 10 && /^[3-9]\d{9}$/.test(digits);
+		}
+
+		function markInvalid(inp) {
+			if (!inp) return;
+			inp.classList.add('is-invalid');
+		}
+
+		function clearInvalid(inp) {
+			if (!inp) return;
+			inp.classList.remove('is-invalid', 'err');
+		}
+
+		function validateRegistrationForm() {
+			var firstInvalid = null;
+			var phone = form.USER_PERSONAL_PHONE;
+			var email = form.USER_EMAIL;
+			var password = form.USER_PASSWORD;
+			var confirm = form.USER_CONFIRM_PASSWORD;
+
+			[phone, email, password, confirm].forEach(clearInvalid);
+
+			if (phone && (phone.getAttribute('data-prime-required') === '1' || phone.required)) {
+				if (!isValidRuPhone(phone.value)) {
+					markInvalid(phone);
+					if (!firstInvalid) firstInvalid = phone;
+				}
+			}
+
+			if (email) {
+				var emailVal = String(email.value || '').trim();
+				var emailRequired = email.getAttribute('data-prime-required') === '1' || email.required;
+				var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(emailVal);
+				var policyOk = true;
+				if (typeof window.primeAlertsIsEmailAllowed === 'function') {
+					policyOk = window.primeAlertsIsEmailAllowed(emailVal);
+				}
+				if ((emailRequired && !emailOk) || (emailOk && !policyOk)) {
+					markInvalid(email);
+					if (!firstInvalid) firstInvalid = email;
+					if (window.primeAlertsCheckRegistrationEmail) {
+						window.primeAlertsCheckRegistrationEmail(email);
+					}
+				}
+			}
+
+			if (password && !String(password.value || '').length) {
+				markInvalid(password);
+				if (!firstInvalid) firstInvalid = password;
+			}
+
+			if (confirm) {
+				var pw = String(password && password.value || '');
+				var conf = String(confirm.value || '');
+				if (!conf.length || conf !== pw) {
+					markInvalid(confirm);
+					if (!pw.length) markInvalid(password);
+					if (!firstInvalid) firstInvalid = !pw.length ? password : confirm;
+				}
+			}
+
+			if (firstInvalid) {
+				try { firstInvalid.focus(); } catch (e) {}
+				return false;
+			}
+			return true;
+		}
+
+		form.addEventListener('submit', function (e) {
+			if (!validateRegistrationForm()) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}, true);
+
+		form.addEventListener('input', function (e) {
+			if (e.target && e.target.tagName === 'INPUT') {
+				clearInvalid(e.target);
+			}
+		}, true);
+
+		var NOTICE_HTML = <?= Json::encode($primeRegEmailExistsNotice) ?>;
+		var CHECK_URL = '/local/modules/prime.alerts/ajax/check_email.php';
+		var cache = Object.create(null);
+		var timers = Object.create(null);
+
+		function sessid() {
+			if (window.PRIME_ALERTS && window.PRIME_ALERTS.sessid) {
+				return window.PRIME_ALERTS.sessid;
+			}
+			return (window.BX && BX.bitrix_sessid && BX.bitrix_sessid()) || '';
+		}
+
+		function looksComplete(email) {
+			return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(email || '').trim());
+		}
+
+		function emailAnchor(inp) {
+			return inp.closest('.bx-authform-formgroup-container');
+		}
+
+		function hideDupBox(anchor) {
+			if (!anchor) return;
+			var box = anchor.nextElementSibling;
+			if (box && box.classList.contains('prime-alerts-live-notice') && box.getAttribute('data-kind') === 'duplicate') {
+				box.parentNode.removeChild(box);
+			}
+		}
+
+		function showDupBox(anchor) {
+			if (!anchor || !NOTICE_HTML) return;
+			var box = anchor.nextElementSibling;
+			if (!box || !box.classList.contains('prime-alerts-live-notice')) {
+				box = document.createElement('div');
+				box.className = 'prime-alerts-live-notice';
+				box.setAttribute('aria-live', 'polite');
+				anchor.parentNode.insertBefore(box, anchor.nextSibling);
+			}
+			box.innerHTML = NOTICE_HTML;
+			box.setAttribute('data-kind', 'duplicate');
+			box.setAttribute('data-dup-filled', '1');
+			box.style.display = 'block';
+			box.classList.add('is-visible');
+		}
+
+		function checkRegEmail(inp) {
+			if (!inp) return;
+			var email = String(inp.value || '').trim();
+			var anchor = emailAnchor(inp);
+			if (!looksComplete(email)) {
+				hideDupBox(anchor);
+				return;
+			}
+			if (cache[email] !== undefined) {
+				if (cache[email]) showDupBox(anchor);
+				else hideDupBox(anchor);
+				return;
+			}
+			clearTimeout(timers[inp]);
+			timers[inp] = setTimeout(function () {
+				fetch(CHECK_URL, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+						'X-Requested-With': 'XMLHttpRequest'
+					},
+					body: 'sessid=' + encodeURIComponent(sessid()) + '&email=' + encodeURIComponent(email)
+				}).then(function (r) { return r.json(); }).then(function (data) {
+					cache[email] = !!(data && data.ok && data.exists);
+					if (String(inp.value || '').trim() === email) {
+						checkRegEmail(inp);
+					}
+				}).catch(function () {});
+			}, 400);
+		}
+
+		function bindRegEmail() {
+			var inp = document.bform && document.bform.USER_EMAIL;
+			if (!inp || inp.getAttribute('data-prime-reg-dup-bound') === '1') return;
+			inp.setAttribute('data-prime-reg-dup-bound', '1');
+
+			inp.addEventListener('keyup', function () {
+				document.bform.USER_LOGIN.value = document.bform.USER_EMAIL.value;
+				checkRegEmail(inp);
+				if (window.primeAlertsCheckRegistrationEmail) {
+					window.primeAlertsCheckRegistrationEmail(inp);
+				}
+			});
+			['input', 'change', 'blur', 'paste'].forEach(function (ev) {
+				inp.addEventListener(ev, function () { checkRegEmail(inp); });
+			});
+
+			var lastVal = inp.value;
+			var poll = setInterval(function () {
+				if (inp.value !== lastVal) {
+					lastVal = inp.value;
+					checkRegEmail(inp);
+				}
+			}, 400);
+			setTimeout(function () { clearInterval(poll); }, 20000);
+
+			checkRegEmail(inp);
+			setTimeout(function () { checkRegEmail(inp); }, 150);
+			setTimeout(function () { checkRegEmail(inp); }, 800);
+		}
+
+		bindRegEmail();
+		if (window.BX && BX.addCustomEvent) {
+			BX.addCustomEvent('onAjaxSuccess', bindRegEmail);
+		}
+	})();
+</script>
+
+<?endif?>
+
+</noindex>
+</div>
+</div>
+</div>

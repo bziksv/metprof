@@ -2,7 +2,58 @@
 <?
 if (!$USER->IsAuthorized())
 {
-	echo ShowError($arResult["ERROR_MESSAGE"]);	
+	$regInvalid = [];
+	$authInvalid = [];
+	$errMsg = (string)($arResult["ERROR_MESSAGE"] ?? '');
+	$fieldErrorMap = [
+		'NEW_NAME' => 'STOF_ERROR_REG_NAME',
+		'NEW_LAST_NAME' => 'STOF_ERROR_REG_LASTNAME',
+		'NEW_EMAIL' => ['STOF_ERROR_REG_EMAIL', 'STOF_ERROR_REG_BAD_EMAIL'],
+		'USER_PERSONAL_PHONE' => ['STOF_ERROR_REG_PHONE', 'STOF_ERROR_REG_BAD_PHONE'],
+		'NEW_PASSWORD' => ['STOF_ERROR_REG_FLAG1', 'STOF_ERROR_REG_PASS'],
+		'NEW_PASSWORD_CONFIRM' => 'STOF_ERROR_REG_PASS',
+	];
+	$authErrorMap = [
+		'USER_LOGIN' => ['STOF_ERROR_AUTH_LOGIN', 'STOF_ERROR_AUTH'],
+		'USER_PASSWORD' => ['STOF_ERROR_AUTH_PASSWORD', 'STOF_ERROR_AUTH'],
+	];
+	$displayError = $errMsg;
+	foreach ($fieldErrorMap as $field => $codes) {
+		foreach ((array)$codes as $code) {
+			$text = GetMessage($code);
+			if ($text !== '' && $text !== $code && $errMsg !== '' && mb_stripos($errMsg, $text) !== false) {
+				$regInvalid[$field] = true;
+				$displayError = str_ireplace($text . '.<br />', '', $displayError);
+				$displayError = str_ireplace($text . '<br />', '', $displayError);
+				$displayError = str_ireplace($text . '.', '', $displayError);
+				$displayError = str_ireplace($text, '', $displayError);
+			}
+		}
+	}
+	foreach ($authErrorMap as $field => $codes) {
+		foreach ((array)$codes as $code) {
+			$text = GetMessage($code);
+			if ($text === '' || $text === $code || $errMsg === '') {
+				continue;
+			}
+			if (mb_stripos($errMsg, $text) !== false) {
+				$authInvalid[$field] = true;
+				// убираем и полную строку с хвостом Bitrix ("...: Неверный логин...")
+				$displayError = preg_replace(
+					'/' . preg_quote($text, '/') . '(?:[^<]*)(?:\.<br\s*\/?>|<br\s*\/?>|\.)?/iu',
+					'',
+					$displayError
+				);
+			}
+		}
+	}
+	$displayError = trim(preg_replace('/(<br\s*\/?>\s*)+/i', '<br />', $displayError), " \t\n\r\0\x0B.");
+	$displayError = preg_replace('/^(<br\s*\/?>)+|(<br\s*\/?>)+$/i', '', $displayError);
+	$arResult['REG_INVALID_FIELDS'] = array_keys($regInvalid);
+	$arResult['AUTH_INVALID_FIELDS'] = array_keys($authInvalid);
+	if ($displayError !== '') {
+		echo ShowError($displayError);
+	}
 	include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/auth.php");
 }
 else

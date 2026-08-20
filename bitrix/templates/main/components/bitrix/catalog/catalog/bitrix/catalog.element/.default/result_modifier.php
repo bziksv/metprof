@@ -623,8 +623,14 @@ if($arResult['PROPERTIES']['MORE_PHOTO']['VALUE']){
       $arResult['NAME'] = preg_replace('#(~(.*?)~)#is', '', $arResult['NAME']);
 
 
+$arResult['IS_M2'] = false;
+
 foreach($arResult['OFFERS'] as $key => $offer){
 	unset($arResult['OFFERS'][$key]);
+
+	if ((int)($offer['CATALOG_MEASURE'] ?? 0) === 6 || (int)($offer['PRODUCT']['MEASURE'] ?? 0) === 6) {
+		$arResult['IS_M2'] = true;
+	}
 
 	$db_props = CIBlockElement::GetProperty($offer["IBLOCK_ID"], $offer["ID"], array("sort" => "asc"), Array("CODE" => "DLINA"));
 	if($ar_props = $db_props->Fetch()){
@@ -636,8 +642,6 @@ foreach($arResult['OFFERS'] as $key => $offer){
 			continue;
 		}
 	}
-	//$arResult['IS_M2'] = ($offer['CATALOG_MEASURE'] == 6) ? true : false;
-$arResult['IS_M2'] = ($offer['PRODUCT']['MEASURE'] == 6) ? true : false;
 
 }
 
@@ -682,5 +686,19 @@ if ($seoDescription !== '')
 }
 
 unset($arResult['PROPERTIES']['SEO_DESCRIPTION']);
+
+$arResult['HAS_RECOMMENDED'] = false;
+if (!empty($arResult['PROPERTIES']['RECOMEND_PRODUCT']['VALUE']))
+{
+	$arResult['HAS_RECOMMENDED'] = true;
+}
+elseif (CModule::IncludeModule('sale'))
+{
+	$recommendedIterator = CSaleProduct::GetProductList($arResult['ID'], 1, 1, true);
+	if ($recommendedIterator && $recommendedIterator->Fetch())
+	{
+		$arResult['HAS_RECOMMENDED'] = true;
+	}
+}
 
 ?>

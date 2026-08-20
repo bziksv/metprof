@@ -20,14 +20,7 @@ var <?=$cartId?> = new BitrixSmallCart;
 
 
 <div id="<?=$cartId?>" class="<?=$cartStyle?>"><?
-	/** @var \Bitrix\Main\Page\FrameBuffered $frame */
-	$frame = $this->createFrame($cartId, false)->begin();
-		require(realpath(dirname(__FILE__)).'/ajax_template.php');
-	$frame->beginStub();
-		$arResult['COMPOSITE_STUB'] = 'Y';
-		require(realpath(dirname(__FILE__)).'/top_template.php');
-		unset($arResult['COMPOSITE_STUB']);
-	$frame->end();
+	require(realpath(dirname(__FILE__)).'/ajax_template.php');
 ?></div>
 <script type="text/javascript">
 	<?=$cartId?>.siteId       = '<?=SITE_ID?>';

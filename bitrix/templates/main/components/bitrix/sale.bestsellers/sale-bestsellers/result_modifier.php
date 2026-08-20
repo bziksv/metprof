@@ -399,4 +399,53 @@ if (!empty($arResult['ITEMS']))
 	$arResult['SKU_PROPS'] = $skuPropList;
 	$arResult['DEFAULT_PICTURE'] = $arEmptyPreview;
 }
+
+$needCount = max(1, (int)($arParams['PAGE_ELEMENT_COUNT'] ?? 10));
+if (!is_array($arResult['ITEMS']))
+{
+	$arResult['ITEMS'] = [];
+}
+
+if (count($arResult['ITEMS']) < $needCount && CModule::IncludeModule('iblock'))
+{
+	$existingIds = [];
+	foreach ($arResult['ITEMS'] as $item)
+	{
+		$id = (int)($item['ID'] ?? 0);
+		if ($id > 0)
+			$existingIds[] = $id;
+	}
+
+	$filter = [
+		'IBLOCK_ID' => defined('IBLOCK_CATALOG') ? IBLOCK_CATALOG : 24,
+		'ACTIVE' => 'Y',
+	];
+	if ($existingIds)
+		$filter['!ID'] = $existingIds;
+
+	$res = CIBlockElement::GetList(
+		['shows' => 'DESC', 'sort' => 'ASC'],
+		$filter,
+		false,
+		['nTopCount' => $needCount - count($arResult['ITEMS'])],
+		['ID', 'IBLOCK_ID', 'NAME', 'DETAIL_PAGE_URL', 'PREVIEW_PICTURE']
+	);
+
+	while ($ob = $res->GetNextElement())
+	{
+		$fields = $ob->GetFields();
+		$props = $ob->GetProperties();
+		$previewId = (int)($fields['PREVIEW_PICTURE'] ?? 0);
+
+		$arResult['ITEMS'][] = [
+			'ID' => $fields['ID'],
+			'NAME' => $fields['NAME'],
+			'DETAIL_PAGE_URL' => $fields['DETAIL_PAGE_URL'],
+			'PREVIEW_PICTURE' => ['ID' => $previewId],
+			'PROPERTIES' => [
+				'CML2_BASE_UNIT' => $props['CML2_BASE_UNIT'] ?? ['VALUE' => ''],
+			],
+		];
+	}
+}
 ?>

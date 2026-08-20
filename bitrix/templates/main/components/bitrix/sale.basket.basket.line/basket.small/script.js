@@ -182,19 +182,22 @@ BitrixSmallCart.prototype = {
 			this.itemRemoved = false;
 			return;
 		}
-		data.sessid = BX.bitrix_sessid();
-		data.siteId = this.siteId;
-		data.templateName = this.templateName;
-		data.arParams = this.arParams;
-		data.arParams.CACHE_TYPE = 'N';
-		data.arParams.CACHE_TIME = '0';
-		data.arParams.AJAX = 'Y';
+
+		var cartComponent = this;
+
 		BX.ajax({
-			url: this.ajaxPath,
-			method: 'POST',
+			url: '/ajax/basket-header.php',
+			method: 'GET',
 			dataType: 'html',
-			data: data,
-			onsuccess: this.setCartBodyClosure
+			data: {_: Date.now()},
+			onsuccess: function (result) {
+				if (cartComponent.cartElement && result) {
+					cartComponent.cartElement.innerHTML = result;
+				}
+				if (cartComponent.fixedPosition) {
+					setTimeout(cartComponent.fixAfterRenderClosure, 100);
+				}
+			}
 		});
 	},
 

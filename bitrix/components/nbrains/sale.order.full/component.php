@@ -207,6 +207,9 @@ if (!$USER->IsAuthorized())
 			if (strlen($arResult["POST"]["USER_LOGIN"]) <= 0)
 				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_AUTH_LOGIN").".<br />";
 
+			if (strlen($arResult["POST"]["USER_PASSWORD"]) <= 0)
+				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_AUTH_PASSWORD").".<br />";
+
 			if (strlen($arResult["ERROR_MESSAGE"]) <= 0)
 			{
 				$arAuthResult = $USER->Login($arResult["POST"]["~USER_LOGIN"], $arResult["POST"]["~USER_PASSWORD"], "N");
@@ -229,6 +232,17 @@ if (!$USER->IsAuthorized())
 				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG_EMAIL").".<br />";
 			elseif (!check_email($arResult["POST"]["NEW_EMAIL"]))
 				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG_BAD_EMAIL").".<br />";
+
+			$regPhone = trim((string)($arResult["POST"]["~USER_PERSONAL_PHONE"] ?? $arResult["POST"]["USER_PERSONAL_PHONE"] ?? ''));
+			$regPhoneDigits = preg_replace('/\D+/', '', $regPhone) ?? '';
+			if (strlen($regPhoneDigits) === 11 && ($regPhoneDigits[0] === '7' || $regPhoneDigits[0] === '8')) {
+				$regPhoneDigits = substr($regPhoneDigits, 1);
+			}
+			if ($regPhoneDigits === '') {
+				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG_PHONE").".<br />";
+			} elseif (!preg_match('/^[3-9]\d{9}$/', $regPhoneDigits)) {
+				$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG_BAD_PHONE").".<br />";
+			}
 
 			if ($arResult["POST"]["NEW_GENERATE"] == "Y")
 			{
@@ -320,8 +334,14 @@ if (!$USER->IsAuthorized())
 			{
 				$arAuthResult = $USER->Register($arResult["POST"]["~NEW_EMAIL"], $arResult["POST"]["~NEW_NAME"], $arResult["POST"]["~NEW_LAST_NAME"], $arResult["POST"]["~NEW_PASSWORD"], $arResult["POST"]["~NEW_PASSWORD_CONFIRM"], $arResult["POST"]["~NEW_EMAIL"], LANG, $arResult["POST"]["~captcha_word"], $arResult["POST"]["~captcha_sid"]);
 
+				$regPhoneSave = trim((string)($arResult["POST"]["~USER_PERSONAL_PHONE"] ?? $arResult["POST"]["USER_PERSONAL_PHONE"] ?? $arResult["POST"]["~WORK_PHONE"] ?? ''));
 				$update_prop_user = new CUser;
-				$update_prop_user->Update($arAuthResult['ID'], array("WORK_DEPARTMENT" => $arResult["POST"]["PERSON_TYPE"], "WORK_PHONE" => $arResult["POST"]["WORK_PHONE"], "WORK_POSITION" => $arResult["POST"]["WORK_POSITION"]));
+				$update_prop_user->Update($arAuthResult['ID'], array(
+					"WORK_DEPARTMENT" => $arResult["POST"]["PERSON_TYPE"],
+					"WORK_PHONE" => $regPhoneSave,
+					"PERSONAL_PHONE" => $regPhoneSave,
+					"WORK_POSITION" => $arResult["POST"]["WORK_POSITION"],
+				));
 
 				if ($arAuthResult != False && $arAuthResult["TYPE"] == "ERROR")
 					$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG").((strlen($arAuthResult["MESSAGE"]) > 0) ? ": ".$arAuthResult["MESSAGE"] : ".<br />" );

@@ -1,0 +1,159 @@
+/* Главная: вкладки каталога и карточки подкатегорий */
+
+.mp__categories .tabslist {
+  display: flex;
+  align-items: stretch;
+}
+
+.mp__categories .tabslist .maincategory {
+  float: none !important;
+  flex: 1 1 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mp__categories .tabslist .maincategory.active {
+  box-shadow: inset 0 3px 0 #0464bb;
+}
+
+.mp__categories .tablist_content {
+  border-radius: 0 0 8px 8px;
+  padding: 20px 16px 36px;
+  background: #fff;
+}
+
+.mp__categories .tablist_content .tabitem .category__line {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category {
+  float: none !important;
+  width: 100% !important;
+  min-width: 0;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category .link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 200px;
+  padding: 14px 10px 16px;
+  border: 1px solid #e2e8ec;
+  border-radius: 8px;
+  background: #fff;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category:hover .link {
+  border-color: #0464bb;
+  background: linear-gradient(180deg, #f4f9ff 0%, #fff 100%);
+  box-shadow: 0 6px 20px rgba(4, 100, 187, 0.14);
+  transform: translateY(-3px);
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category .img {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  height: 110px !important;
+  min-height: 110px !important;
+  max-height: 110px !important;
+  margin-bottom: 10px !important;
+  object-fit: contain;
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category .name {
+  display: -webkit-box !important;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 52px;
+  max-height: 52px;
+  font-size: 13px;
+  line-height: 1.3;
+  padding: 0 2px;
+  text-align: center;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.mp__categories .tablist_content .tabitem .category__line .category:hover .link .name {
+  color: #00a1f2;
+}
+
+@media screen and (max-width: 1019px) {
+  .mp__categories .tabslist {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .mp__categories .tabslist .maincategory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 124px;
+    padding: 8px 4px;
+    text-align: center;
+  }
+
+  .mp__categories .tabslist .maincategory.maincategory--2 {
+    margin: 0 !important;
+  }
+
+  .mp__categories .tabslist .maincategory .img {
+    position: static !important;
+    margin: 0 auto 8px;
+    left: auto;
+    top: auto;
+  }
+
+  .mp__categories .tablist_content {
+    padding: 16px 10px 28px;
+  }
+
+  .mp__categories .tablist_content .tabitem .category__line {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  .mp__categories .tablist_content .tabitem .category__line .category .link {
+    height: 170px;
+    padding: 10px 6px 12px;
+  }
+
+  .mp__categories .tablist_content .tabitem .category__line .category .img {
+    height: 85px !important;
+    min-height: 85px !important;
+    max-height: 85px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .mp__categories .tablist_content .tabitem .category__line .category .name {
+    min-height: 42px;
+    max-height: 42px;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .mp__categories .tablist_content .tabitem .category__line {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .mp__categories .tablist_content .tabitem .category__line .category .link {
+    height: 158px;
+  }
+}

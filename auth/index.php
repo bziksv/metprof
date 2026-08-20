@@ -2,9 +2,10 @@
 define("NEED_AUTH", true);
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 
-$userName = CUser::GetFullName();
+/** @global CUser $USER */
+$userName = $USER->GetFullName();
 if (!$userName)
-	$userName = CUser::GetLogin();
+	$userName = $USER->GetLogin();
 ?>
 <script>
 	<?if ($userName):?>

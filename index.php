@@ -62,12 +62,9 @@ $APPLICATION->SetTitle("«Металлинвест Профиль» — гла�
 			{
 				$arrSection[] = $arSect;
 			}
-			$rows = ceil(count($arrSection)/6);
-			$section = array_chunk($arrSection,6);
 			?>
-			<? for($i = 0;$i < $rows;$i++):?>
-			<div class="row cl category__line">
-				<? foreach($section[$i] as $item):?>
+			<div class="category__line">
+				<? foreach($arrSection as $item):?>
 				<div class="category">
 					<a href="<?=$item['SECTION_PAGE_URL']?>" class="link">
                         <? if($item["PICTURE"]):?>
@@ -77,8 +74,7 @@ $APPLICATION->SetTitle("«Металлинвест Профиль» — гла�
 					</a>
 				</div>
 				<? endforeach; ?>
-			</div><!-- row cl category__line-->
-			<? endfor; ?>
+			</div>
 
 		</div><!-- end: tabitem -->
 		<? endforeach; ?>
@@ -148,7 +144,7 @@ $APPLICATION->SetTitle("«Металлинвест Профиль» — гла�
 		"PARTIAL_PRODUCT_PROPERTIES" => "N",
 		"PERIOD" => "0",
 		"PRICE_CODE" => array(
-			0 => "SITE",
+			0 => "Продажная",
 		),
 		"PRICE_VAT_INCLUDE" => "Y",
 		"PRODUCT_ID_VARIABLE" => "id",

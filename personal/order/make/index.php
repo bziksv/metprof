@@ -12,7 +12,7 @@ $APPLICATION->SetTitle("1");
 		"COUNT_DISCOUNT_4_ALL_QUANTITY" => "Y",
 		"DELIVERY_NO_SESSION" => "N",
 		"ONLY_FULL_PAY_FROM_ACCOUNT" => "N",
-		"PATH_TO_AUTH" => "/auth.php",
+		"PATH_TO_AUTH" => "/auth/",
 		"PATH_TO_BASKET" => "/personal/orders-list.php",
 		"PATH_TO_PAYMENT" => "payment.php",
 		"PATH_TO_PERSONAL" => "/personal/orders-list.php",

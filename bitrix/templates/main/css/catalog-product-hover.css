@@ -1,0 +1,27 @@
+/* Карточки каталога: hover/add2cart2 поверх соседей, но ниже sticky header (z-index 300+) */
+.products_roll .pr_box:has(.item:hover),
+.products_roll .pr_box:has(.item.add2cart2) {
+  position: relative;
+  z-index: 20;
+  overflow: visible;
+}
+
+.products_roll .pr_box .item:hover,
+.products_roll .pr_box .item.add2cart2,
+.products_roll .pr_box .item.add2cart2:hover {
+  z-index: 21 !important;
+}
+
+.products_roll .pr_box .item:hover .hover,
+.products_roll .pr_box .item.add2cart2 .hover {
+  z-index: 22 !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: -20px -20px -20px 0 !important;
+}
+
+/* Первая колонка — не расширяем карточку влево (боковое меню) */
+.products_roll .pr_box .item:nth-child(4n + 1):hover .hover,
+.products_roll .pr_box .item:nth-child(4n + 1).add2cart2 .hover {
+  margin-left: 0 !important;
+}

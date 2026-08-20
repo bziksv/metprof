@@ -44,6 +44,7 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&amp;subset=cyrillic,latin-ext" rel="stylesheet">');
 		Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i&amp;subset=cyrillic-ext,latin-ext" rel="stylesheet">');
 
+		Asset::getInstance()->addCss('/bitrix/css/main/font-awesome.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/vendor.min.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/slick.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/fonts.css');
@@ -54,8 +55,17 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/social-likes_classic.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/wickedpicker.min.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/modal.css');
+		$stickyHeaderCssPath = $_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/css/sticky-header.css';
+		if (is_file($stickyHeaderCssPath)) {
+			Asset::getInstance()->addString(
+				'<link rel="stylesheet" href="' . SITE_TEMPLATE_PATH . '/css/sticky-header.css?v=' . filemtime($stickyHeaderCssPath) . '">',
+				false,
+				\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+			);
+		}
 
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/jquery.min.js');
+		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/components/prime/search.title/search.title/script.js');
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/vendor.min.js');
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/slick.min.js');
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/jquery-ui.min.js');
@@ -72,8 +82,36 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/jquery.form.js');
 
 		Asset::getInstance()->addJs('/js/readmore.js');
-		Asset::getInstance()->addJs('/js/function.js');
+		$functionJsPath = $_SERVER['DOCUMENT_ROOT'] . '/js/function.js';
+		$functionJsVer = is_file($functionJsPath) ? filemtime($functionJsPath) : time();
+		Asset::getInstance()->addString(
+			'<script src="/js/function.js?v=' . (int)$functionJsVer . '"></script>',
+			true,
+			\Bitrix\Main\Page\AssetLocation::BODY_END
+		);
 		Asset::getInstance()->addJs('/js/bootstrap.min.js');
+
+		if ($is_main) {
+			$homeCategoriesCssPath = $_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/css/home-categories.css';
+			if (is_file($homeCategoriesCssPath)) {
+				Asset::getInstance()->addString(
+					'<link rel="stylesheet" href="' . SITE_TEMPLATE_PATH . '/css/home-categories.css?v=' . filemtime($homeCategoriesCssPath) . '">',
+					true,
+					\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+				);
+			}
+		}
+
+		if (($pages[1] ?? '') === 'catalog') {
+			$catalogHoverCssPath = $_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/css/catalog-product-hover.css';
+			if (is_file($catalogHoverCssPath)) {
+				Asset::getInstance()->addString(
+					'<link rel="stylesheet" href="' . SITE_TEMPLATE_PATH . '/css/catalog-product-hover.css?v=' . filemtime($catalogHoverCssPath) . '">',
+					false,
+					\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+				);
+			}
+		}
 		?>
 
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -112,6 +150,8 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 							"SHOW_PERSONAL_LINK" => "Y",	// Отображать персональный раздел
 							"SHOW_PRODUCTS" => "N",	// Показывать список товаров
 							"SHOW_TOTAL_PRICE" => "Y",	// Показывать общую сумму по товарам
+							"CACHE_TYPE" => "N",
+							"CACHE_TIME" => "0",
 						),
 							false
 						);?>
@@ -252,7 +292,12 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 					</div><!--end::wr-->
 				</div><!--end::header__main-->
 				<div class="header__bottom">
-					<div class="wr cl">
+					<div class="wr">
+
+						<a href="/" class="logo">
+							<img src="<?=SITE_TEMPLATE_PATH?>/img/h_logo.jpg" alt="Металлинвест Профиль" width="206" height="44">
+						</a>
+
 						<div class="header__catalog cl">
 							<?
                             $APPLICATION->IncludeComponent(
@@ -372,13 +417,24 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
                             "PAGE" => "#SITE_DIR#search/",	// Страница выдачи результатов поиска (доступен макрос #SITE_DIR#)
                             "SHOW_INPUT" => "Y",	// Показывать форму ввода поискового запроса
                             "SHOW_OTHERS" => "N",	// Показывать категорию "прочее"
-                            "TOP_COUNT" => "15",	// Количество результатов в каждой категории
+                            "TOP_COUNT" => "50",	// Количество результатов в каждой категории
                             "USE_LANGUAGE_GUESS" => "N",	// Включить автоопределение раскладки клавиатуры
                         ),
                             false
                         );?>	
 
-					<a href="<?if ($USER->IsAuthorized()){?>/personal/orders-list.php<?}else{?>/personal/order/make/<?}?>" class="header__account">Личный кабинет</a>
+					<div class="header__aside">
+						<div class="f_phone">
+							<?
+							$APPLICATION->IncludeFile("/include/phones/stickly/phone_vrn.php", [], [
+								"MODE" => "html",
+								"NAME" => "Телефон в плавающем меню",
+								"TEMPLATE" => "",
+							]);
+							?>
+						</div>
+
+					<a href="<?if ($USER->IsAuthorized()){?>/personal/orders-list.php<?}else{?>/auth/<?}?>" class="header__account">Личный кабинет</a>
 
 						<?$APPLICATION->IncludeComponent("bitrix:sale.basket.basket.line", "basket.small", Array(
 							"HIDE_ON_BASKET_PAGES" => "Y",	// Не показывать на страницах корзины и оформления заказа
@@ -394,9 +450,13 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 							"SHOW_PERSONAL_LINK" => "Y",	// Отображать персональный раздел
 							"SHOW_PRODUCTS" => "N",	// Показывать список товаров
 							"SHOW_TOTAL_PRICE" => "Y",	// Показывать общую сумму по товарам
+							"CACHE_TYPE" => "N",
+							"CACHE_TIME" => "0",
 						),
 							false
 						);?>
+
+					</div><!--end::header__aside-->
 
 					</div><!--end::wr-->
 				</div><!--end::header__bottom-->

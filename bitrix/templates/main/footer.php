@@ -1,5 +1,7 @@
 <?if(!$is_main && $pages[1] !== 'basket' && !($pages[1] == 'catalog' && $pages[3])){?>
- <!--end::page_content--> <?}?> <footer>
+	</div><!--end::page_content-->
+<?}?>
+<footer>
 <div class="footer__top cl">
 	<div class="footer__col col--1">
  <a href="/" class="footer__logo"> <img width="206" alt="Металлинвест Профиль" src="/bitrix/templates/main/img/h_logo.jpg" height="44"> </a>
@@ -268,3 +270,6 @@
 		"USE_CAPTCHA" => "Y"
 	)
 );?>
+
+	</body>
+</html>

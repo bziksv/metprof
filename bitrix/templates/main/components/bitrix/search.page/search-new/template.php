@@ -149,7 +149,7 @@ endif;?>
                 ?>
 
                 <br>
-                  <span class="price"><?if(priceDiscount($arItem['ITEM_ID'])){?><?=priceDiscount($arItem['ITEM_ID']);?><?}else{?><?=price($arItem['ITEM_ID']);?><?}?> Руб. <a href="javascript:void(0)" onclick="addToBasket2(<?=$arItem['ITEM_ID']?>,1);" class="add2basket" tabindex="0"></a></span>
+                  <span class="price"><?if(priceDiscount($arItem['ITEM_ID'])){?><?=priceDiscount($arItem['ITEM_ID']);?><?}else{?><?=price($arItem['ITEM_ID']);?><?}?> Руб. <a href="javascript:void(0)" onclick="addToBasket2(<?=$arItem['ITEM_ID']?>,1,this,5);" class="add2basket" tabindex="0"></a></span>
                 <?
                 }
                 else

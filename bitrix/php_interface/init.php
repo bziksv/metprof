@@ -1,5 +1,8 @@
 <?php
 define('RUB', 'руб');
+define('IBLOCK_CATALOG', 24);
+
+require_once __DIR__ . '/search_helpers.php';
 
 function count_all($value) {
 	if (empty($value)) {

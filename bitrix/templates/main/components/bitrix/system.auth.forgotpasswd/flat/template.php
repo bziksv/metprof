@@ -12,8 +12,15 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 
 //one css for all system.auth.* forms
 $APPLICATION->SetAdditionalCSS("/bitrix/css/main/system.auth/flat/style.css");
+\Bitrix\Main\Page\Asset::getInstance()->addString(
+	'<link rel="stylesheet" href="/bitrix/templates/main/css/auth-page.css?v=1.0.1">',
+	false,
+	\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+);
 ?>
 
+<div class="auth-page-wrap">
+<div class="auth-page">
 <div class="bx-authform">
 
 <?
@@ -69,6 +76,8 @@ if(!empty($arParams["~AUTH_RESULT"])):
 
 	</form>
 
+</div>
+</div>
 </div>
 
 <script type="text/javascript">

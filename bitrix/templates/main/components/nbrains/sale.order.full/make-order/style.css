@@ -44,6 +44,114 @@ table.sale_order_full_table td img {
 }
 .sof-req{color:red;}
 
+/* Подсветка обязательных полей — как на /auth/?register=yes */
+.or__content.s1 .form_registration .line input.is-invalid,
+.or__content.s1 .form_login .line input.is-invalid,
+.form_registration .line input.is-invalid,
+.form_login .line input.is-invalid {
+	border-color: #d64545 !important;
+	background: #fff5f5 !important;
+	box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15);
+}
+
+/* Фиксированная height:620px + absolute «Продолжить» ломают вёрстку при плашке e-mail */
+.or__content.s1 .column .form_registration {
+	height: auto !important;
+	min-height: 0;
+	padding-bottom: 8px;
+}
+
+.or__content.s1 .column .form_registration .registrate {
+	position: static !important;
+	left: auto;
+	bottom: auto;
+	display: block;
+	margin-top: 36px;
+	width: 390px;
+}
+
+.or__content.s1 .column .form_registration .prime-alerts-live-notice {
+	display: block;
+	clear: both;
+	width: 390px;
+	max-width: 100%;
+	margin: 12px 0 8px auto;
+	box-sizing: border-box;
+}
+
+.or__content.s1 .column .form_registration .prime-alerts-live-notice .prime-alerts-notice {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+@media screen and (max-width: 1023px) {
+	.or__content.s1 .column .form_registration .registrate {
+		width: 100%;
+		max-width: 400px;
+	}
+
+	.or__content.s1 .column .form_registration .prime-alerts-live-notice {
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+	}
+}
+
+/* tel/password — те же размеры, что у text в этой форме */
+.or__content.s1 .column .form_registration .line input[type="tel"],
+.or__content.s1 .column .form_registration .line input[type="password"],
+.form_registration .line input[type="tel"],
+.form_registration .line input[type="password"] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 450px;
+	height: 100%;
+	outline: none;
+	border: 1px solid #CDD2D6;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	padding: 15px 20px;
+	font: 400 16px/18px 'Fira Sans', sans-serif;
+	text-align: left;
+	color: #333;
+	box-sizing: border-box;
+	background: #fff;
+}
+
+.or__content.s1 .column .form_registration .line input[type="tel"],
+.or__content.s1 .column .form_registration .line input[type="password"] {
+	width: 390px;
+}
+
+.or__content.s1 .column .form_registration .line input[type="password"].pass,
+.form_registration .line input[type="password"].pass {
+	width: 300px;
+	right: 90px;
+}
+
+.form_registration .line input[type="password"].pass {
+	width: 300px;
+	right: 150px;
+}
+
+.or__content.s1 .form_login .line input[type="password"],
+.form_login .line input[type="password"] {
+	width: 100%;
+	height: 100%;
+	outline: none;
+	border: 1px solid #CDD2D6;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	background: #fff;
+	padding: 15px 20px;
+	font: 400 16px/18px 'Fira Sans', sans-serif;
+	text-align: left;
+	color: #333;
+	box-sizing: border-box;
+	position: static;
+}
+
 textarea{
 	top: 0;
 	right: 0;
