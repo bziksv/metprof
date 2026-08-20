@@ -81,9 +81,18 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/jquery.maskedinput.min.js');
 		Asset::getInstance()->addJs(SITE_TEMPLATE_PATH.'/js/jquery.form.js');
 
-		Asset::getInstance()->addJs('/js/readmore.js');
 		$functionJsPath = $_SERVER['DOCUMENT_ROOT'] . '/js/function.js';
+		$readmoreCssPath = $_SERVER['DOCUMENT_ROOT'] . SITE_TEMPLATE_PATH . '/css/catalog-readmore.css';
 		$functionJsVer = is_file($functionJsPath) ? filemtime($functionJsPath) : time();
+		$readmoreCssVer = is_file($readmoreCssPath) ? filemtime($readmoreCssPath) : time();
+		if (is_file($readmoreCssPath)) {
+			Asset::getInstance()->addString(
+				'<link rel="stylesheet" href="' . SITE_TEMPLATE_PATH . '/css/catalog-readmore.css?v=' . (int)$readmoreCssVer . '">',
+				true,
+				\Bitrix\Main\Page\AssetLocation::AFTER_CSS
+			);
+		}
+		// Грузим после ядра; сам function.js дождётся jQuery и подтянет readmore
 		Asset::getInstance()->addString(
 			'<script src="/js/function.js?v=' . (int)$functionJsVer . '"></script>',
 			true,

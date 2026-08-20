@@ -14,9 +14,10 @@ bitrix/php_interface/*.bak.php
 .env
 .env.*
 
-# php_interface: игнорируем всё, оставляем только init.php и include-код
+# php_interface: игнорируем всё, оставляем только init.php, helpers и include-код
 bitrix/php_interface/*
 !bitrix/php_interface/init.php
+!bitrix/php_interface/search_helpers.php
 !bitrix/php_interface/include/
 !bitrix/php_interface/include/**
 

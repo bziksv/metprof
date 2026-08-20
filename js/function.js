@@ -460,20 +460,114 @@ function updatePrice(El, val) {
 }
 
 
+(function waitForJQuery(start) {
+    if (window.jQuery) {
+        start(window.jQuery);
+        return;
+    }
+    setTimeout(function () { waitForJQuery(start); }, 30);
+})(function ($) {
+    window.jQuery = window.$ = $;
+
+    function loadReadmore(cb) {
+        if (typeof $.fn.readmore === 'function') {
+            cb();
+            return;
+        }
+        var existing = document.querySelector('script[data-metprof-readmore="1"]');
+        if (existing) {
+            var tries = 0;
+            var t = setInterval(function () {
+                tries += 1;
+                if (typeof $.fn.readmore === 'function' || tries > 80) {
+                    clearInterval(t);
+                    cb();
+                }
+            }, 50);
+            return;
+        }
+        var s = document.createElement('script');
+        s.src = '/js/readmore.js?v=2';
+        s.async = true;
+        s.setAttribute('data-metprof-readmore', '1');
+        s.onload = function () { cb(); };
+        s.onerror = function () { cb(); };
+        document.head.appendChild(s);
+    }
+
+    loadReadmore(function () {
+
 $(function(){
 
-    $('.catalog-sections-text').readmore({
-        speed: 75,
-        maxHeight: 160,
-        moreLink: '<a href="#" style="border-bottom:snow">Подробнее...</a>',
-        lessLink: '<a href="#" style="border-bottom:snow">Скрыть</a>'
-    });
-    $('.col-txt > .catalog-sections-text-hidden').readmore({
-        speed: 75,
-        maxHeight: 160,
-        moreLink: '<a href="#" style="border-bottom:snow">Подробнее...</a>',
-        lessLink: '<a href="#" style="border-bottom:snow">Скрыть</a>'
-    });
+    function initSectionReadmore() {
+        if (typeof $.fn.readmore !== 'function') {
+            return false;
+        }
+
+        var moreLink = '<a href="#" class="catalog-sections-more">Показать ещё</a>';
+        var lessLink = '<a href="#" class="catalog-sections-more is-open">Скрыть</a>';
+        var boundAny = false;
+
+        $('.related_articles').each(function () {
+            var $wrap = $(this);
+            var $text = $wrap.find('.col-txt > .catalog-sections-text-hidden').first();
+            if (!$text.length || $text.data('readmore-bound')) {
+                return;
+            }
+
+            var maxHeight = 320;
+            var $articles = $wrap.find('.col-articles').first();
+            var $allBtn = $articles.find('a.allarticles').first();
+            if ($articles.length && $(window).width() > 1019) {
+                var textTop = $text.offset().top;
+                if ($allBtn.length) {
+                    // Кнопка «Показать ещё» (margin-top ~20) на уровне «Все статьи»
+                    maxHeight = Math.max(180, Math.round($allBtn.offset().top - textTop - 20));
+                } else {
+                    maxHeight = Math.max(180, Math.round($articles.outerHeight(true) - 60));
+                }
+            }
+
+            $text.data('readmore-bound', 1);
+            boundAny = true;
+            $text.readmore({
+                speed: 75,
+                maxHeight: maxHeight,
+                moreLink: moreLink,
+                lessLink: lessLink
+            });
+        });
+
+        $('.catalog-sections-text').each(function () {
+            var $text = $(this);
+            if ($text.closest('.related_articles').length || $text.data('readmore-bound')) {
+                return;
+            }
+            $text.data('readmore-bound', 1);
+            boundAny = true;
+            $text.readmore({
+                speed: 75,
+                maxHeight: 220,
+                moreLink: moreLink,
+                lessLink: lessLink
+            });
+        });
+
+        if (boundAny) {
+            return true;
+        }
+        return !$('.related_articles .catalog-sections-text-hidden, .catalog-sections-text').length;
+    }
+
+    if (!initSectionReadmore()) {
+        var readmoreTries = 0;
+        var readmoreTimer = setInterval(function () {
+            readmoreTries += 1;
+            if (initSectionReadmore() || readmoreTries > 80) {
+                clearInterval(readmoreTimer);
+            }
+        }, 50);
+    }
 
     $('.category__show').click(function(){
        var than = $(this);
@@ -651,6 +745,9 @@ if($(window).width() < 768){
         self.attr('src',self.attr('data-small'));
     });
 }
+
+    }); // loadReadmore
+}); // waitForJQuery
 
 function destroyPopover(){
     $('#order-table, #popover-button-cart, #popover-button-cart-table-add').popover('destroy');
