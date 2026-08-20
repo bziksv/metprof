@@ -97,6 +97,62 @@ function isRootFolder($id,$root){
     }
 }
 
+/**
+ * Товары в м² / с выбором длины листа — только через детальную карточку.
+ */
+function productNeedsDetailBuy($productId): bool
+{
+	$productId = (int)$productId;
+	if ($productId <= 0 || !CModule::IncludeModule('catalog')) {
+		return false;
+	}
+
+	$product = CCatalogProduct::GetByID($productId);
+	if (is_array($product) && (int)($product['MEASURE'] ?? 0) === 6) {
+		return true;
+	}
+
+	$unit = '';
+	$res = CIBlockElement::GetProperty(IBLOCK_CATALOG, $productId, [], ['CODE' => 'CML2_BASE_UNIT']);
+	if ($prop = $res->Fetch()) {
+		$unit = (string)($prop['VALUE_ENUM'] ?? $prop['VALUE'] ?? '');
+		if ((int)($prop['DESCRIPTION'] ?? 0) === 6) {
+			return true;
+		}
+	}
+	$unitNorm = mb_strtolower(str_replace(['²', ' '], ['2', ''], $unit));
+	if ($unitNorm !== '' && (strpos($unitNorm, 'м2') !== false || $unitNorm === 'm2')) {
+		return true;
+	}
+
+	if (!class_exists('CCatalogSKU') || !CCatalogSKU::IsExistOffers($productId, IBLOCK_CATALOG)) {
+		return false;
+	}
+
+	$offers = CCatalogSKU::getOffersList(
+		$productId,
+		IBLOCK_CATALOG,
+		['ACTIVE' => 'Y'],
+		['ID', 'CATALOG_MEASURE'],
+		['CODE' => ['DLINA']]
+	);
+	if (empty($offers[$productId]) || !is_array($offers[$productId])) {
+		return false;
+	}
+
+	foreach ($offers[$productId] as $offer) {
+		if ((int)($offer['CATALOG_MEASURE'] ?? 0) === 6) {
+			return true;
+		}
+		$dlina = $offer['PROPERTIES']['DLINA']['VALUE'] ?? null;
+		if ($dlina !== null && $dlina !== '' && $dlina !== false) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 function buttonName($IBLOCK_ID,$SECTION_ID){
 

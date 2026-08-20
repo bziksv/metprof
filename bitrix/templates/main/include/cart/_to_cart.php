@@ -17,9 +17,14 @@ if(!isset($arOffers['ID']))
 
 if(!isset($arParams['PROPERTIES']['CML2_BASE_UNIT']))
     throw new ErrorException("PROPERTIES CML2_BASE_UNIT must be included!");
+
+$detailUrl = (string)($arParams['DETAIL_PAGE_URL'] ?? '');
+$needsDetail = $detailUrl !== '' && function_exists('productNeedsDetailBuy') && productNeedsDetailBuy((int)$arParams['ID']);
 ?>
 
-<? if($arOffers['CATALOG_QUANTITY']): ?>
+<? if($needsDetail): ?>
+    <a href="<?=$detailUrl?>" class="cart">Купить</a>
+<? elseif($arOffers['CATALOG_QUANTITY']): ?>
     <a href="javascript:void(0);" onclick="addToBasket2(<?=$arOffers['ID']?>, 1,this,<?=$arParams['PROPERTIES']['CML2_BASE_UNIT']['DESCRIPTION']?>);" class="cart">Купить</a>
 <?else:?>
     <a href="javascript:void(0)" class="cart show-popup" data-id="order-product">Под заказ</a>

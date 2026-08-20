@@ -39,7 +39,11 @@ if ($sidebarMode):
                         <div class="cost"><span><?=$itemPrice?></span> <?=RUB?>/<?=$arItem['PROPERTIES']['CML2_BASE_UNIT']['VALUE']?></div>
                         <a href="<?=$arItem['DETAIL_PAGE_URL']?>" class="txt"><?=$arItem['NAME']?></a>
                         <? if ((float)$itemPrice): ?>
-                            <a href="javascript:void(0)" onclick="addToBasket2(<?=$offerId?>,1,this,5);" class="add2cart">Купить</a>
+                            <? if (productNeedsDetailBuy((int)$arItem['ID'])): ?>
+                                <a href="<?=$arItem['DETAIL_PAGE_URL']?>" class="add2cart">Купить</a>
+                            <? else: ?>
+                                <a href="javascript:void(0)" onclick="addToBasket2(<?=$offerId?>,1,this,5);" class="add2cart">Купить</a>
+                            <? endif; ?>
                         <? else: ?>
                             <a href="javascript:void(0)" class="add2cart show-popup" data-id="order-product">под заказ</a>
                         <? endif; ?>
