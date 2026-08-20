@@ -413,9 +413,9 @@
 	max-width: 100%;
 	margin: 12px 0 8px auto;
 	padding: 12px 14px;
-	border: 1px solid #f5c2c7;
+	border: 1px solid #cdd2d6;
 	border-radius: 8px;
-	background: #f8d7da;
+	background: #f8fafb;
 	box-sizing: border-box;
 }
 .or__content .prime-phoneauth-reg--order:not(.is-visible),
@@ -425,12 +425,31 @@
 	padding: 0 !important;
 	border: 0 !important;
 }
+.or__content .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-ok),
+.form_registration .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-ok),
+.or__content .prime-phoneauth-reg--order.is-ok,
+.form_registration .prime-phoneauth-reg--order.is-ok {
+	border-color: #b7dfc3;
+	background: #e8f5ec;
+}
+.or__content .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-bad),
+.form_registration .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-bad),
+.or__content .prime-phoneauth-reg--order.is-bad,
+.form_registration .prime-phoneauth-reg--order.is-bad {
+	border-color: #f5c2c7;
+	background: #f8d7da;
+}
 .or__content .prime-phoneauth-reg--order .prime-phoneauth-reg__status,
 .form_registration .prime-phoneauth-reg--order .prime-phoneauth-reg__status {
 	font-size: 13px;
 	line-height: 1.45;
-	color: #842029;
+	color: #5a7a9a;
 	margin: 0 0 6px;
+}
+.or__content .prime-phoneauth-reg--order .prime-phoneauth-reg__status.is-ok,
+.form_registration .prime-phoneauth-reg--order .prime-phoneauth-reg__status.is-ok {
+	color: #2d6a3e;
+	font-weight: 600;
 }
 .or__content .prime-phoneauth-reg--order .prime-phoneauth-reg__status.is-bad,
 .form_registration .prime-phoneauth-reg--order .prime-phoneauth-reg__status.is-bad {
@@ -440,8 +459,14 @@
 .or__content .prime-phoneauth-reg--order .prime-phoneauth-reg__accounts,
 .form_registration .prime-phoneauth-reg--order .prime-phoneauth-reg__accounts {
 	display: block;
-	border-color: #f5c2c7;
+	border-color: #cdd2d6;
 	background: #fff;
+}
+.or__content .prime-phoneauth-reg--order.is-bad .prime-phoneauth-reg__accounts,
+.form_registration .prime-phoneauth-reg--order.is-bad .prime-phoneauth-reg__accounts,
+.or__content .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-bad) .prime-phoneauth-reg__accounts,
+.form_registration .prime-phoneauth-reg--order:has(.prime-phoneauth-reg__status.is-bad) .prime-phoneauth-reg__accounts {
+	border-color: #f5c2c7;
 }
 .or__content .prime-phoneauth-reg--order .prime-phoneauth-reg__links,
 .form_registration .prime-phoneauth-reg--order .prime-phoneauth-reg__links {

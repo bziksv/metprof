@@ -660,6 +660,10 @@
 			}
 			box.classList.toggle('is-visible', hasContent);
 			box.style.display = hasContent ? '' : 'none';
+			var ok = statusEl.classList.contains('is-ok');
+			var bad = statusEl.classList.contains('is-bad') || accountsEl.children.length > 0;
+			box.classList.toggle('is-ok', ok);
+			box.classList.toggle('is-bad', !ok && bad);
 		}
 
 		function clearRegDuplicateNotice() {
