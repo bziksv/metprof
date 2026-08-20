@@ -82,7 +82,7 @@ class Frontend
 		];
 
 		$cssHref = '/local/modules/prime.alerts/assets/style.css?v=1.5.22';
-		$jsHref = '/local/modules/prime.alerts/assets/policy.js?v=1.5.25';
+		$jsHref = '/local/modules/prime.alerts/assets/policy.js?v=1.5.26';
 		$flash = '';
 		try {
 			$session = \Bitrix\Main\Application::getInstance()->getSession();

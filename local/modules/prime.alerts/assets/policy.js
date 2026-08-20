@@ -567,6 +567,37 @@
 		}
 	}
 
+	function closeAnyWait() {
+		try {
+			if (window.BX && typeof BX.closeWait === 'function') {
+				BX.closeWait();
+			}
+		} catch (e) {}
+		try {
+			document.querySelectorAll('.bx-core-waitwindow, #wait_window_dialog, .bx-core-dialog-overlay').forEach(function (el) {
+				if (el && el.parentNode) el.parentNode.removeChild(el);
+			});
+		} catch (e2) {}
+	}
+
+	function blockFormSubmit(e, emailInput) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (typeof e.stopImmediatePropagation === 'function') {
+			e.stopImmediatePropagation();
+		}
+		closeAnyWait();
+		if (emailInput) {
+			emailInput.classList.add('is-invalid');
+			refreshInput(emailInput, { force: true });
+			try { emailInput.focus(); } catch (err) {}
+			try {
+				var box = ensureBox(emailInput, false);
+				if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			} catch (err2) {}
+		}
+	}
+
 	function bind() {
 		document.addEventListener('input', function (e) {
 			if (e.target && e.target.tagName === 'INPUT') scheduleRefresh(e.target);
@@ -593,10 +624,7 @@
 				if (!looksComplete(email)) continue;
 
 				if (cfg.enabled !== false && policyEnabledFor('signup') && !isAllowed(email)) {
-					e.preventDefault();
-					emailInput.classList.add('is-invalid');
-					refreshInput(emailInput, { force: true });
-					try { emailInput.focus(); } catch (errPolicy) {}
+					blockFormSubmit(e, emailInput);
 					return;
 				}
 
@@ -608,19 +636,22 @@
 				}
 				var dup = duplicateStateFor(emailInput);
 				if (dup.exists) {
-					e.preventDefault();
-					emailInput.classList.add('is-invalid');
-					refreshInput(emailInput, { force: true });
-					try { emailInput.focus(); } catch (err) {}
+					blockFormSubmit(e, emailInput);
 					return;
 				}
 				if (dup.checking || !(duplicateCache && duplicateCache.has(email))) {
 					e.preventDefault();
+					e.stopPropagation();
+					if (typeof e.stopImmediatePropagation === 'function') {
+						e.stopImmediatePropagation();
+					}
+					closeAnyWait();
 					checkEmailDuplicate(email).then(function (data) {
 						var exists = !!(data && data.ok && data.exists);
 						if (duplicateCache) duplicateCache.set(email, exists);
 						setDuplicateState(emailInput, { exists: exists, checking: false });
 						refreshInput(emailInput, { force: true });
+						closeAnyWait();
 						if (!exists) {
 							form.setAttribute('data-prime-alerts-email-ok', email);
 							if (typeof form.requestSubmit === 'function') {
@@ -633,6 +664,8 @@
 							emailInput.classList.add('is-invalid');
 							try { emailInput.focus(); } catch (err2) {}
 						}
+					}).catch(function () {
+						closeAnyWait();
 					});
 					return;
 				}
