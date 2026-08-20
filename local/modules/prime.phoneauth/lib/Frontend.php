@@ -67,10 +67,22 @@ class Frontend
 			'duplicateMessage' => AuthService::duplicateMessage(),
 			'duplicateAccounts' => $profile['accounts'],
 			'standalonePrompt' => $standalonePrompt,
+			'pendingRegister' => (static function () {
+				$pending = AuthService::getPendingRegisterConfirm();
+				if (!$pending) {
+					return null;
+				}
+
+				return [
+					'token' => $pending['token'],
+					'phone' => Phone::format($pending['phone']),
+					'digits' => $pending['phone'],
+				];
+			})(),
 		];
 
 		$css = '/local/modules/prime.phoneauth/assets/auth.css?v=1.2.5';
-		$js = '/local/modules/prime.phoneauth/assets/auth.js?v=1.0.30';
+		$js = '/local/modules/prime.phoneauth/assets/auth.js?v=1.0.31';
 		$alertsCss = '';
 		if ($hasRegistrationPhone && \Bitrix\Main\Loader::includeModule('prime.alerts')) {
 			$alertsCss = '<link rel="stylesheet" href="/local/modules/prime.alerts/assets/style.css?v=1.5.20">' . "\n";

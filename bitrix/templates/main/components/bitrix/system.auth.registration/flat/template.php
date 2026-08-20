@@ -111,7 +111,7 @@ new BX.PhoneAuth({
 	<form method="post" action="<?=$arResult["AUTH_URL"]?>" name="bform" enctype="multipart/form-data" novalidate>
 		<input type="hidden" name="AUTH_FORM" value="Y" />
 		<input type="hidden" name="TYPE" value="REGISTRATION" />
-		<input type="hidden" name="USER_LOGIN" value="<?=$arResult["USER_EMAIL"]?>" />
+		<input type="hidden" name="USER_LOGIN" value="<?=htmlspecialcharsbx(trim((string)$arResult["USER_EMAIL"]))?>" />
 
 		<div class="bx-authform-formgroup-container">
 			<div class="bx-authform-label-container"><?=GetMessage("AUTH_NAME")?></div>
@@ -288,12 +288,21 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 			inp.classList.remove('is-invalid', 'err');
 		}
 
+		function syncLoginFromEmail() {
+			if (!form.USER_EMAIL || !form.USER_LOGIN) return;
+			var emailVal = String(form.USER_EMAIL.value || '').trim();
+			form.USER_EMAIL.value = emailVal;
+			form.USER_LOGIN.value = emailVal;
+		}
+
 		function validateRegistrationForm() {
 			var firstInvalid = null;
 			var phone = form.USER_PERSONAL_PHONE;
 			var email = form.USER_EMAIL;
 			var password = form.USER_PASSWORD;
 			var confirm = form.USER_CONFIRM_PASSWORD;
+
+			syncLoginFromEmail();
 
 			[phone, email, password, confirm].forEach(clearInvalid);
 
@@ -306,6 +315,8 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 
 			if (email) {
 				var emailVal = String(email.value || '').trim();
+				email.value = emailVal;
+				if (form.USER_LOGIN) form.USER_LOGIN.value = emailVal;
 				var emailRequired = email.getAttribute('data-prime-required') === '1' || email.required;
 				var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(emailVal);
 				var policyOk = true;
@@ -344,6 +355,7 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 		}
 
 		form.addEventListener('submit', function (e) {
+			syncLoginFromEmail();
 			if (!validateRegistrationForm()) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -438,14 +450,22 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 			inp.setAttribute('data-prime-reg-dup-bound', '1');
 
 			inp.addEventListener('keyup', function () {
-				document.bform.USER_LOGIN.value = document.bform.USER_EMAIL.value;
+				document.bform.USER_LOGIN.value = String(document.bform.USER_EMAIL.value || '').trim();
+				document.bform.USER_EMAIL.value = document.bform.USER_LOGIN.value;
 				checkRegEmail(inp);
 				if (window.primeAlertsCheckRegistrationEmail) {
 					window.primeAlertsCheckRegistrationEmail(inp);
 				}
 			});
 			['input', 'change', 'blur', 'paste'].forEach(function (ev) {
-				inp.addEventListener(ev, function () { checkRegEmail(inp); });
+				inp.addEventListener(ev, function () {
+					var v = String(inp.value || '').trim();
+					if (ev === 'blur' || ev === 'change') {
+						inp.value = v;
+						if (form.USER_LOGIN) form.USER_LOGIN.value = v;
+					}
+					checkRegEmail(inp);
+				});
 			});
 
 			var lastVal = inp.value;

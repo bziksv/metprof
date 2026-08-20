@@ -6,6 +6,7 @@ class Handlers
 {
 	public static function onBeforeUserRegister(&$arFields)
 	{
+		self::normalizeLoginEmail($arFields);
 		self::ensurePersonalPhoneFromPost($arFields);
 
 		return self::validateRegisterPhone($arFields);
@@ -13,6 +14,7 @@ class Handlers
 
 	public static function onBeforeUserAdd(&$arFields)
 	{
+		self::normalizeLoginEmail($arFields);
 		self::ensurePersonalPhoneFromPost($arFields);
 		if (!self::validateRegisterPhone($arFields)) {
 			return false;
@@ -41,6 +43,13 @@ class Handlers
 		}
 
 		$token = (string)($_POST['prime_phoneauth_token'] ?? '');
+		$normPhone = $norm;
+		if ($token === '') {
+			$pending = AuthService::getPendingRegisterConfirm();
+			if ($pending && $pending['phone'] === $normPhone) {
+				$token = $pending['token'];
+			}
+		}
 		if ($token === '' || !AuthService::registerTokenMatches($token, $norm)) {
 			return;
 		}
@@ -101,6 +110,41 @@ class Handlers
 		AuthService::redirectAfterPasswordLogin();
 	}
 
+	protected static function normalizeLoginEmail(array &$arFields): void
+	{
+		if (isset($arFields['EMAIL'])) {
+			$arFields['EMAIL'] = trim((string)$arFields['EMAIL']);
+		}
+		if (isset($arFields['LOGIN'])) {
+			$arFields['LOGIN'] = trim((string)$arFields['LOGIN']);
+		}
+		$email = trim((string)($arFields['EMAIL'] ?? ''));
+		$login = trim((string)($arFields['LOGIN'] ?? ''));
+		if ($login === '' && $email !== '') {
+			$arFields['LOGIN'] = $email;
+		} elseif ($login !== '' && ($login !== trim($login) || preg_match('/^\s|\s$/', (string)($arFields['LOGIN'] ?? '')))) {
+			$arFields['LOGIN'] = $login;
+		}
+		// Логин = email без пробелов по краям (частая причина ошибки Bitrix после маски/автозаполнения)
+		if ($email !== '' && ($login === '' || $login === $email || strpos($login, '@') !== false)) {
+			$arFields['LOGIN'] = $email;
+		}
+	}
+
+	protected static function resolveRegisterToken(string $norm): string
+	{
+		$token = trim((string)($_POST['prime_phoneauth_token'] ?? ''));
+		if ($token !== '') {
+			return $token;
+		}
+		$pending = AuthService::getPendingRegisterConfirm();
+		if ($pending && $pending['phone'] === $norm) {
+			return $pending['token'];
+		}
+
+		return '';
+	}
+
 	protected static function ensurePersonalPhoneFromPost(array &$arFields): void
 	{
 		if (trim((string)($arFields['PERSONAL_PHONE'] ?? '')) !== '') {
@@ -118,8 +162,7 @@ class Handlers
 		if ($norm === '') {
 			return false;
 		}
-
-		$token = (string)($_POST['prime_phoneauth_token'] ?? '');
+		$token = self::resolveRegisterToken($norm);
 
 		return $token !== '' && AuthService::registerTokenMatches($token, $norm);
 	}
@@ -146,7 +189,7 @@ class Handlers
 		}
 
 		$norm = Phone::national10($phone);
-		$token = (string)($_POST['prime_phoneauth_token'] ?? '');
+		$token = self::resolveRegisterToken($norm);
 		if ($token !== '' && AuthService::registerTokenMatches($token, $norm)) {
 			return true;
 		}
@@ -192,12 +235,9 @@ class Handlers
 
 	protected static function applyRegisterConfirmation(array &$arFields): void
 	{
-		$token = (string)($_POST['prime_phoneauth_token'] ?? '');
-		if ($token === '') {
-			return;
-		}
 		$norm = Phone::national10((string)($arFields['PERSONAL_PHONE'] ?? ''));
-		if ($norm === '' || !AuthService::registerTokenMatches($token, $norm)) {
+		$token = self::resolveRegisterToken($norm);
+		if ($token === '' || $norm === '' || !AuthService::registerTokenMatches($token, $norm)) {
 			return;
 		}
 		$arFields[AuthService::UF_CONFIRMED] = 1;

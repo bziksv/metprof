@@ -714,6 +714,18 @@
 			tokenInp.value = '';
 			wait.style.display = 'none';
 			verifyBtn.disabled = false;
+			try { sessionStorage.removeItem('prime_phoneauth_reg'); } catch (e) {}
+		}
+
+		function persistConfirm(token, phone) {
+			try {
+				sessionStorage.setItem('prime_phoneauth_reg', JSON.stringify({
+					token: token,
+					phone: phone,
+					digits: phoneDigits(phone),
+					ts: Date.now()
+				}));
+			} catch (e) {}
 		}
 
 		function markConfirmed() {
@@ -725,6 +737,9 @@
 			phoneInput.classList.remove('is-invalid');
 			if (linksEl) linksEl.style.display = 'none';
 			setAccounts([]);
+			if (tokenInp.value) {
+				persistConfirm(tokenInp.value, phoneInput.value);
+			}
 			syncRegBoxVisibility();
 		}
 
@@ -931,6 +946,60 @@
 		if (phoneReady(phoneInput.value)) {
 			lookupNow();
 		}
+
+		// Восстановить подтверждение после ошибки регистрации / перезагрузки
+		(function restorePendingConfirm() {
+			var pending = cfg.pendingRegister || null;
+			var stored = null;
+			try {
+				stored = JSON.parse(sessionStorage.getItem('prime_phoneauth_reg') || 'null');
+			} catch (e) { stored = null; }
+			var source = null;
+			if (pending && pending.token) {
+				source = {
+					token: pending.token,
+					phone: pending.phone || '',
+					digits: pending.digits || phoneDigits(pending.phone || '')
+				};
+			} else if (stored && stored.token && (Date.now() - (stored.ts || 0)) < 3600000) {
+				source = {
+					token: stored.token,
+					phone: stored.phone || '',
+					digits: stored.digits || phoneDigits(stored.phone || '')
+				};
+			}
+			if (!source || !source.token || !source.digits) return;
+
+			function formatMask(digits10) {
+				var d = String(digits10 || '').replace(/\D/g, '');
+				if (d.length === 11 && (d.charAt(0) === '7' || d.charAt(0) === '8')) d = d.slice(1);
+				if (d.length !== 10) return '';
+				return '+7-' + d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6, 8) + '-' + d.slice(8, 10);
+			}
+
+			var currentDigits = phoneDigits(phoneInput.value);
+			if (currentDigits && currentDigits !== source.digits) {
+				return;
+			}
+			if (!phoneReady(phoneInput.value)) {
+				var masked = source.phone && String(source.phone).indexOf('+7') === 0
+					? source.phone
+					: formatMask(source.digits);
+				if (masked) {
+					phoneInput.value = masked;
+					try { phoneInput.dispatchEvent(new Event('input', { bubbles: true })); } catch (e2) {}
+				}
+			}
+			if (phoneDigits(phoneInput.value) !== source.digits) {
+				return;
+			}
+			tokenInp.value = source.token;
+			lastPhoneDigits = source.digits;
+			lastLookupPhone = phoneInput.value;
+			lastLookupData = { ok: true, status: 'free', accounts: [] };
+			markConfirmed();
+			persistConfirm(source.token, phoneInput.value);
+		})();
 
 		form.addEventListener('submit', function (e) {
 			if (tokenInp.value) return;

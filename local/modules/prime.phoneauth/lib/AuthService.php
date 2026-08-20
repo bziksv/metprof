@@ -257,6 +257,7 @@ class AuthService
 		}
 
 		Challenge::setStatus((int)$row['ID'], Challenge::STATUS_CANCELLED);
+		self::clearPendingRegisterConfirm();
 
 		return true;
 	}
@@ -470,6 +471,7 @@ class AuthService
 
 		$userId = (int)$row['USER_ID'];
 		if ($userId <= 0) {
+			self::rememberRegisterConfirm($token, (string)$row['PHONE']);
 			return [
 				'ok' => true,
 				'status' => 'confirmed',
@@ -628,6 +630,50 @@ class AuthService
 	}
 
 	public const DEFAULT_REDIRECT = '/personal/orders-list.php';
+
+	public static function rememberRegisterConfirm(string $token, string $phoneNorm): void
+	{
+		if ($token === '' || $phoneNorm === '') {
+			return;
+		}
+		$_SESSION['PRIME_PHONEAUTH_REG_CONFIRM'] = [
+			'token' => $token,
+			'phone' => $phoneNorm,
+			'ts' => time(),
+		];
+	}
+
+	/** @return array{token:string,phone:string}|null */
+	public static function getPendingRegisterConfirm(): ?array
+	{
+		$row = $_SESSION['PRIME_PHONEAUTH_REG_CONFIRM'] ?? null;
+		if (!is_array($row)) {
+			return null;
+		}
+		$token = trim((string)($row['token'] ?? ''));
+		$phone = trim((string)($row['phone'] ?? ''));
+		$ts = (int)($row['ts'] ?? 0);
+		if ($token === '' || $phone === '') {
+			return null;
+		}
+		if ($ts > 0 && (time() - $ts) > 3600) {
+			self::clearPendingRegisterConfirm();
+			return null;
+		}
+		if (!self::registerTokenMatches($token, $phone)) {
+			self::clearPendingRegisterConfirm();
+			return null;
+		}
+
+		return ['token' => $token, 'phone' => $phone];
+	}
+
+	public static function clearPendingRegisterConfirm(): void
+	{
+		if (isset($_SESSION['PRIME_PHONEAUTH_REG_CONFIRM'])) {
+			unset($_SESSION['PRIME_PHONEAUTH_REG_CONFIRM']);
+		}
+	}
 
 	public static function rememberBackurl(?string $candidate = null): string
 	{
