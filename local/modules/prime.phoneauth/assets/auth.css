@@ -142,9 +142,31 @@
 }
 .pd__block #personal-contacts {
 	margin-top: 0;
+	clear: both;
+}
+/* type=tel не попадала под .line input[type=text] — поле и статус ехали в сторону */
+.pd__block .line input[type=tel],
+.pd__block .line input[type=email],
+.ss__block .line input[type=tel],
+.ss__block .line input[type=email] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 450px;
+	height: 100%;
+	outline: none;
+	border: 1px solid #CDD2D6;
+	border-radius: 5px;
+	padding: 15px 20px;
+	font: 400 16px/18px 'Fira Sans', sans-serif;
+	text-align: left;
+	color: #333;
+	box-sizing: border-box;
 }
 .pd__block #personal-contacts .prime-phoneauth-status,
 .pd__block #personal-contacts .prime-phoneauth-wait {
+	clear: both;
+	display: block;
 	margin: 10px 0 0 auto;
 	width: 450px;
 	max-width: 100%;
@@ -153,7 +175,7 @@
 .pd__block #personal-contacts .prime-phoneauth-status {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-start;
 	flex-wrap: wrap;
 	gap: 10px 12px;
 	font-size: 14px;
@@ -179,6 +201,12 @@
 	background: #f8fafb;
 }
 @media screen and (max-width: 659px) {
+	.pd__block .line input[type=tel],
+	.pd__block .line input[type=email],
+	.ss__block .line input[type=tel],
+	.ss__block .line input[type=email] {
+		width: 200px;
+	}
 	.pd__block #personal-contacts .prime-phoneauth-status,
 	.pd__block #personal-contacts .prime-phoneauth-wait {
 		width: 200px;

@@ -29,6 +29,11 @@ if (!\Bitrix\Main\Loader::includeModule('prime.alerts')) {
 }
 
 $email = trim((string)($_POST['email'] ?? ''));
-$result = \Prime\Alerts\EmailLookup::lookup($email);
+$excludeUserId = 0;
+global $USER;
+if (is_object($USER) && $USER->IsAuthorized()) {
+	$excludeUserId = (int)$USER->GetID();
+}
+$result = \Prime\Alerts\EmailLookup::lookup($email, $excludeUserId);
 
 echo \Bitrix\Main\Web\Json::encode($result);

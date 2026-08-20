@@ -53,6 +53,14 @@ class Frontend
 		)));
 
 		$profileData = ProfileBanner::profileData();
+		$currentEmail = '';
+		global $USER;
+		if (is_object($USER) && $USER->IsAuthorized()) {
+			$currentEmail = trim((string)$USER->GetEmail());
+			if ($currentEmail === '') {
+				$currentEmail = trim((string)($profileData['email'] ?? ''));
+			}
+		}
 		$config = [
 			'enabled' => $policyOn,
 			'checkEmailDuplicate' => true,
@@ -65,15 +73,16 @@ class Frontend
 			'noticeSignup' => $policyOn ? EmailPolicy::getNoticeHtml('signup') : '',
 			'noticeCheckout' => $policyOn ? EmailPolicy::getNoticeHtml('checkout') : '',
 			'profileBannerHtml' => $profileBannerHtml,
-			'profileEmail' => $profileBannerHtml !== '' ? (string)$profileData['email'] : '',
+			'profileEmail' => $currentEmail,
+			'currentEmail' => $currentEmail,
 			'emailUnconfirmed' => $profileBannerHtml !== '' && ProfileBanner::emailUnconfirmed($profileData),
 			'justRegistered' => $profileBannerHtml !== '' && ProfileBanner::isJustRegistered(),
 			'sessid' => function_exists('bitrix_sessid') ? bitrix_sessid() : '',
 			'snoozeUrl' => '/local/modules/prime.alerts/ajax/snooze.php',
 		];
 
-		$cssHref = '/local/modules/prime.alerts/assets/style.css?v=1.5.21';
-		$jsHref = '/local/modules/prime.alerts/assets/policy.js?v=1.5.24';
+		$cssHref = '/local/modules/prime.alerts/assets/style.css?v=1.5.22';
+		$jsHref = '/local/modules/prime.alerts/assets/policy.js?v=1.5.25';
 		$flash = '';
 		try {
 			$session = \Bitrix\Main\Application::getInstance()->getSession();

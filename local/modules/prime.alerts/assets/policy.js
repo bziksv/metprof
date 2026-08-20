@@ -404,7 +404,19 @@
 		box.classList.add('is-visible');
 	}
 
+	function normalizeEmail(email) {
+		return String(email || '').trim().toLowerCase();
+	}
+
+	function isOwnProfileEmail(email) {
+		var own = normalizeEmail(cfg.currentEmail || cfg.profileEmail || '');
+		return own !== '' && normalizeEmail(email) === own;
+	}
+
 	function checkEmailDuplicate(email) {
+		if (isOwnProfileEmail(email)) {
+			return Promise.resolve({ ok: true, exists: false, message: '' });
+		}
 		var url = cfg.checkEmailUrl || '/local/modules/prime.alerts/ajax/check_email.php';
 		var body = 'sessid=' + encodeURIComponent(cfg.sessid || (window.BX && BX.bitrix_sessid && BX.bitrix_sessid()) || '')
 			+ '&email=' + encodeURIComponent(email);
@@ -426,6 +438,11 @@
 		var email = String(inp.value || '').trim();
 		if (!looksComplete(email)) {
 			setDuplicateState(inp, { exists: false, checking: false });
+			return;
+		}
+		if (isOwnProfileEmail(email)) {
+			setDuplicateState(inp, { exists: false, checking: false });
+			if (duplicateCache) duplicateCache.set(email, false);
 			return;
 		}
 		if (duplicateCache && duplicateCache.has(email)) {
@@ -490,7 +507,7 @@
 			return;
 		}
 
-		if (ctx === 'signup' && cfg.checkEmailDuplicate !== false) {
+		if (ctx === 'signup' && cfg.checkEmailDuplicate !== false && !isOwnProfileEmail(email)) {
 			scheduleDuplicateCheck(inp);
 			var dup = duplicateStateFor(inp);
 			if (dup.exists) {
@@ -500,6 +517,8 @@
 			if (dup.checking) {
 				return;
 			}
+		} else if (isOwnProfileEmail(email)) {
+			setDuplicateState(inp, { exists: false, checking: false });
 		}
 
 		if (cfg.enabled === false || !ctx || !policyEnabledFor(ctx)) {
@@ -582,6 +601,7 @@
 				}
 
 				if (cfg.checkEmailDuplicate === false) continue;
+				if (isOwnProfileEmail(email)) continue;
 				if (form.getAttribute('data-prime-alerts-email-ok') === email) {
 					form.removeAttribute('data-prime-alerts-email-ok');
 					continue;

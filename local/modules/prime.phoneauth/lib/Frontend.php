@@ -81,7 +81,7 @@ class Frontend
 			})(),
 		];
 
-		$css = '/local/modules/prime.phoneauth/assets/auth.css?v=1.2.5';
+		$css = '/local/modules/prime.phoneauth/assets/auth.css?v=1.2.6';
 		$js = '/local/modules/prime.phoneauth/assets/auth.js?v=1.0.31';
 		$alertsCss = '';
 		if ($hasRegistrationPhone && \Bitrix\Main\Loader::includeModule('prime.alerts')) {
