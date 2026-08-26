@@ -3,13 +3,6 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Бесплатный подбор оборудования");
 ?>
 
-<style>
-.mf-captcha {
-    margin: 10px 0;
-    max-width: 300px;
-}
-</style>
-
 <div class="row cl">
     <div class="rq__form">
     <p>Наши сотрудники помогут Вам правильно скомплектовать Ваш заказ, избежать стандартных ошибок и как следствие сэкономить время и деньги.</p>
@@ -34,7 +27,7 @@ $APPLICATION->SetTitle("Бесплатный подбор оборудовани
                 6 => "FILE",
             ),
             "REQUIRED_FIELDS" => "",
-            "USE_CAPTCHA" => "Y",	// Использовать защиту от автоматических сообщений (CAPTCHA) для неавторизованных пользователей
+            "USE_CAPTCHA" => "N",	// Использовать защиту от автоматических сообщений (CAPTCHA) для неавторизованных пользователей
         ),
             false
         );?>

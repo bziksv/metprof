@@ -8,8 +8,20 @@
 		<p class="footer__logotext">
 			Кровельные и фасадные материалы для промышленного и гражданского строительства.
 		</p>
- <a href="/upload/politics.pdf" target="_blank" style="font-size: 11px; text-decoration: none; color: #4d4d4d;">Политика конфиденциальности</a><br>
-		<a href="/upload/rules-recommendation.pdf" target="_blank" style="font-size: 11px; text-decoration: none; color: #4d4d4d;">Рекомендательные технологии</a><br>
+		<?php
+		$legalFooter = include $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/config.php';
+		$footerLegalLinks = [
+			['url' => $legalFooter['urls']['consent'], 'label' => 'Согласие на обработку персональных данных'],
+			['url' => $legalFooter['urls']['personal_data'], 'label' => 'Политика обработки персональных данных'],
+			['url' => $legalFooter['urls']['cookie'], 'label' => 'Политика использования cookie-файлов'],
+			['url' => $legalFooter['urls']['recommendation'], 'label' => 'Рекомендательные технологии'],
+		];
+		?>
+		<noindex>
+		<?php foreach ($footerLegalLinks as $footerLegalLink): ?>
+		<a href="<?= htmlspecialcharsbx($footerLegalLink['url']) ?>" rel="nofollow" target="_blank" style="font-size: 11px; text-decoration: none; color: #4d4d4d;"><?= htmlspecialcharsbx($footerLegalLink['label']) ?></a><br>
+		<?php endforeach; ?>
+		</noindex>
 		<br>
 		 <iframe src="https://yandex.ru/sprav/widget/rating-badge/2411245882?type=rating&theme=dark"; width="150" height="50" frameborder="0"></iframe>
 	</div>
@@ -92,7 +104,7 @@
 	</div>
 </div>
 <div class="footer__bottom cl">
-	<noindex><p style="font-size: .857em;">Наш сайт использует <a href="/upload/cookies.pdf" target="_blank">cookies</a> для обеспечения работоспособности и сбора статистики. С их помощью мы анализируем пользовательскую активность, улучшаем работу сайта и делаем рекламу более релевантной. Оставаясь на сайте, вы даете согласие на обработку ваших персональных данных. Вы можете отключить сохранение cookies в настройках браузера в любой момент. На сайте также применяются <a href="/upload/rules-recommendation.pdf" target="_blank">рекомендательные технологии</a>. Подробнее об обработке персональных данных — в соответствующей <a href="/upload/politics.pdf" target="_blank">Политике</a>.</p></noindex>
+	<noindex><p style="font-size: .857em;">Наш сайт использует <a href="/legal/metprof-politika-cookie/" rel="nofollow" target="_blank">cookie-файлы</a> для работы сайта, сбора статистики и улучшения сервиса. Оставаясь на сайте, вы соглашаетесь на обработку персональных данных на условиях <a href="/legal/metprof-soglasie-obrabotki-pd/" rel="nofollow" target="_blank">Согласия на обработку персональных данных</a> и подтверждаете ознакомление с <a href="/legal/metprof-politika-obrabotki-pd/" rel="nofollow" target="_blank">Политикой обработки персональных данных</a>. Подробнее о cookie — в <a href="/legal/metprof-politika-cookie/" rel="nofollow" target="_blank">Политике использования cookie-файлов</a>. На сайте также применяются <a href="/legal/metprof-pravila-rekomendatelnyh-tehnologiy/" rel="nofollow" target="_blank">рекомендательные технологии</a>. Cookie можно отключить в настройках браузера в любой момент.</p></noindex>
 
 	<div class="footer__copyright">
 		© 2006 — <?=date("Y");?>. Металлинвест Профиль. Воронеж
@@ -186,7 +198,7 @@
 		"IBLOCK_TYPE" => "feedback",
 		"OK_TEXT" => "Спасибо, ваше сообщение принято.",
 		"PROPERTY_CODE" => array(0=>"EMAIL",1=>"PHONE",2=>"FIO",3=>"PRODUCT",4=>"LINK_PRODUCT",5=>"RULE",),
-		"USE_CAPTCHA" => "Y"
+		"USE_CAPTCHA" => "N"
 	)
 );?>
 			<?$APPLICATION->IncludeComponent(
@@ -200,7 +212,7 @@
 		"IBLOCK_TYPE" => "feedback",
 		"OK_TEXT" => "Спасибо, ваше сообщение принято.",
 		"PROPERTY_CODE" => array(0=>"FIO",1=>"PHONE",2=>"EMAIL",3=>"DESC",4=>"RULE",),
-		"USE_CAPTCHA" => "Y"
+		"USE_CAPTCHA" => "N"
 	)
 );?>
 				<?
@@ -231,7 +243,7 @@
 							6 => "IMG_PRODUCT",
 							7 => "PRICE",
 						),
-						"USE_CAPTCHA" => "Y",
+						"USE_CAPTCHA" => "N",
 						"COMPONENT_TEMPLATE" => "buy-one-click",
 						"PRODUCT" => array(
 							"NAME" => $arResult['NAME'],
@@ -253,7 +265,7 @@
 		"IBLOCK_TYPE" => "feedback",
 		"OK_TEXT" => "Спасибо, ваше сообщение принято.",
 		"PROPERTY_CODE" => array(0=>"FIO",1=>"EMAIL",2=>"PHONE",3=>"RULE",4=>"PRODUCT_CART",),
-		"USE_CAPTCHA" => "Y"
+		"USE_CAPTCHA" => "N"
 	)
 );?>
 				<?$APPLICATION->IncludeComponent(
@@ -267,7 +279,7 @@
 		"IBLOCK_TYPE" => "feedback",
 		"OK_TEXT" => "Спасибо, ваше сообщение принято.",
 		"PROPERTY_CODE" => array(0=>"FIO",1=>"PHONE",2=>"EMAIL",3=>"RULE",4=>"PRODUCT",5=>"LINK_PRODUCT",),
-		"USE_CAPTCHA" => "Y"
+		"USE_CAPTCHA" => "N"
 	)
 );?>
 

@@ -54,6 +54,11 @@ if (!$USER->IsAuthorized())
 	if ($displayError !== '') {
 		echo ShowError($displayError);
 	}
+	\Bitrix\Main\Page\Asset::getInstance()->addString(
+		'<link rel="stylesheet" href="' . htmlspecialcharsbx($templateFolder) . '/style.css?v=20260826d">',
+		false,
+		\Bitrix\Main\Page\AssetLocation::BODY_END
+	);
 	include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/auth.php");
 }
 else

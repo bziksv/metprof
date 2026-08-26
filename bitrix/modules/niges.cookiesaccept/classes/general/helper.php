@@ -93,8 +93,12 @@ class CNigesCookiesAcceptHelper
 		$value = is_string($value) ? $value : (string)$value;
 
 		switch ($name) {
-			case 'MAINTEXT':
-				return self::sanitizeHtml($value);
+		case 'MAINTEXT':
+			if ($value !== '') {
+				$charset = defined('SITE_CHARSET') ? SITE_CHARSET : 'UTF-8';
+				$value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, $charset);
+			}
+			return self::sanitizeHtml($value);
 
 			case 'TEXTBTN':
 				return self::sanitizePlainText($value, 120);
@@ -274,7 +278,23 @@ class CNigesCookiesAcceptHelper
 			$title = ' title="'.htmlspecialcharsbx($tt[2]).'"';
 		}
 
-		$rel = ($target !== '') ? ' rel="noopener noreferrer"' : '';
+		$relParts = array();
+		if (preg_match('/rel\s*=\s*(["\'])(.*?)\1/i', $attrs, $rm)) {
+			foreach (preg_split('/\s+/', strtolower(trim($rm[2]))) as $relToken) {
+				if (in_array($relToken, array('nofollow', 'noopener', 'noreferrer'), true)) {
+					$relParts[] = $relToken;
+				}
+			}
+		}
+		if ($target !== '') {
+			foreach (array('noopener', 'noreferrer') as $relToken) {
+				if (!in_array($relToken, $relParts, true)) {
+					$relParts[] = $relToken;
+				}
+			}
+		}
+		$relParts = array_values(array_unique($relParts));
+		$rel = $relParts ? ' rel="'.implode(' ', $relParts).'"' : '';
 
 		return '<a href="'.htmlspecialcharsbx($href).'"'.$title.$target.$rel.'>';
 	}

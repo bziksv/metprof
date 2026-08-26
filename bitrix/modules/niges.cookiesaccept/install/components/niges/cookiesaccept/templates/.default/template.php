@@ -63,7 +63,7 @@ $styleVars = sprintf(
 	aria-live="polite"
 >
 	<div class="nca-bar" id="nca-bar">
-		<div class="nca-cookiesaccept-line-text"><?=$mainText?></div>
+		<noindex><div class="nca-cookiesaccept-line-text"><?=$mainText?></div></noindex>
 		<div class="nca-cookiesaccept-line-actions">
 			<button type="button" id="nca-cookiesaccept-line-accept-btn" class="nca-accept-btn">
 				<?=$btnText?>

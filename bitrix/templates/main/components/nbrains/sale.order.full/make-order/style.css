@@ -54,39 +54,101 @@ table.sale_order_full_table td img {
 	box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15);
 }
 
-.form_registration .agent--consent.is-invalid {
-	outline: 2px solid #d64545;
-	outline-offset: 6px;
-	border-radius: 4px;
-	background: #fff5f5;
-	padding: 8px 10px;
-	margin-left: -10px;
-	margin-right: -10px;
+/* Фиксированная height:620px + absolute «Продолжить» ломают вёрстку при ошибках */
+.or__content .column .form_registration,
+.or__content.s1 .column .form_registration {
+	height: auto !important;
+	min-height: 0 !important;
+	padding-bottom: 16px !important;
+	overflow: visible !important;
 }
+
+.or__content .column .form_registration .form_registration__actions,
+.or__content.s1 .column .form_registration .form_registration__actions {
+	display: block;
+	clear: both;
+	margin-top: 8px;
+}
+
+.form_registration .agent,
+.form_registration .agent--consent {
+	height: auto !important;
+	min-height: 0 !important;
+	margin-left: 0;
+	padding-left: 0;
+	clear: both;
+	position: static !important;
+	overflow: visible !important;
+}
+
+.form_registration .agent--consent {
+	margin-top: 16px;
+	margin-bottom: 0;
+}
+
+.form_registration .agent label,
+.form_registration .agent--consent label {
+	display: block;
+	cursor: pointer;
+}
+
+.form_registration .agent input[type="checkbox"] + span,
+.form_registration .agent--consent input[type="checkbox"] + span {
+	display: block;
+	position: relative;
+	padding-left: 25px;
+	font: 400 13px/1.45 'Fira Sans', sans-serif;
+	color: #555;
+}
+
+.form_registration .agent input[type="checkbox"] + span::before,
+.form_registration .agent--consent input[type="checkbox"] + span::before {
+	left: 0 !important;
+	top: 0 !important;
+	margin-top: 0 !important;
+}
+
+.form_registration .agent--consent.is-invalid {
+	border: none;
+	padding: 0;
+	background: transparent;
+}
+
+.form_registration .agent--consent.is-invalid label {
+	border: 1px solid #f5c2c7;
+	border-radius: 8px;
+	background: #fff5f5;
+	padding: 10px 12px 10px 0;
+}
+
 .form_registration .agent--consent .agent__error {
 	display: block;
 	margin-top: 8px;
+	margin-bottom: 0;
+	padding-left: 25px;
 	color: #d64545;
 	font: 500 13px/1.35 'Fira Sans', sans-serif;
+	clear: both;
 }
+
 .form_registration .agent--consent .agent__error[hidden] {
 	display: none !important;
 }
 
-/* Фиксированная height:620px + absolute «Продолжить» ломают вёрстку при плашке e-mail */
-.or__content.s1 .column .form_registration {
-	height: auto !important;
-	min-height: 0;
-	padding-bottom: 8px;
-}
-
-.or__content.s1 .column .form_registration .registrate {
+.or__content .column .form_registration .registrate,
+.or__content.s1 .column .form_registration .registrate,
+.or__content .column .form_registration .form_registration__actions .registrate,
+.or__content.s1 .column .form_registration .form_registration__actions .registrate {
 	position: static !important;
-	left: auto;
-	bottom: auto;
-	display: block;
-	margin-top: 36px;
+	left: auto !important;
+	bottom: auto !important;
+	top: auto !important;
+	display: block !important;
+	float: none !important;
+	clear: both !important;
+	margin-top: 16px !important;
 	width: 390px;
+	max-width: 100%;
 }
 
 .or__content.s1 .column .form_registration .prime-alerts-live-notice {
@@ -104,7 +166,10 @@ table.sale_order_full_table td img {
 }
 
 @media screen and (max-width: 1023px) {
-	.or__content.s1 .column .form_registration .registrate {
+	.or__content .column .form_registration .registrate,
+	.or__content.s1 .column .form_registration .registrate,
+	.or__content .column .form_registration .form_registration__actions .registrate,
+	.or__content.s1 .column .form_registration .form_registration__actions .registrate {
 		width: 100%;
 		max-width: 400px;
 	}

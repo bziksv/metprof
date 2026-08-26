@@ -66,14 +66,6 @@ if($res['countryCode']!='RU')  die;
 			}
 		}
 		
-		if($arParams["USE_CAPTCHA"] == "Y")
-		{
-			$captcha_code = $_POST["g-recaptcha-response"];
-			if (empty($captcha_code))
-				$arResult["ERROR_MESSAGE"][] = GetMessage("MF_CAPTHCA_EMPTY");
-
-		}
-
 		if(empty($arResult["ERROR_MESSAGE"])){
 			$el = new CIBlockElement;
 			$PROP = array();
@@ -167,7 +159,5 @@ elseif($_REQUEST["success"] == $arResult["PARAMS_HASH"])
 $arResult['USER_FIELD'] = $arPropertyField;
 
 
-if($arParams["USE_CAPTCHA"] == "Y")
-	$arResult["capCode"] =  htmlspecialcharsbx($APPLICATION->CaptchaGetCode());
-
 $this->IncludeComponentTemplate();
+

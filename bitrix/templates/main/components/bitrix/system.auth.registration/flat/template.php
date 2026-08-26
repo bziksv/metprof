@@ -32,7 +32,7 @@ if($arResult["SHOW_SMS_FIELD"] == true)
 //one css for all system.auth.* forms
 $APPLICATION->SetAdditionalCSS("/bitrix/css/main/system.auth/flat/style.css");
 \Bitrix\Main\Page\Asset::getInstance()->addString(
-	'<link rel="stylesheet" href="/bitrix/templates/main/css/auth-page.css?v=1.0.2">',
+	'<link rel="stylesheet" href="/bitrix/templates/main/css/auth-page.css?v=1.0.4">',
 	false,
 	\Bitrix\Main\Page\AssetLocation::AFTER_CSS
 );
@@ -210,34 +210,15 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 		</div>
 
 <?endif?>
-		<div class="bx-authform-formgroup-container">
-			<div class="bx-authform-label-container">
-			</div>
-			<div class="bx-authform-input-container">
-				<?$APPLICATION->IncludeComponent("bitrix:main.userconsent.request", "",
-					array(
-						"ID" => COption::getOptionString("main", "new_user_agreement", ""),
-						"IS_CHECKED" => "Y",
-						"AUTO_SAVE" => "N",
-						"IS_LOADED" => "Y",
-						"ORIGINATOR_ID" => $arResult["AGREEMENT_ORIGINATOR_ID"],
-						"ORIGIN_ID" => $arResult["AGREEMENT_ORIGIN_ID"],
-						"INPUT_NAME" => $arResult["AGREEMENT_INPUT_NAME"],
-						"REPLACE" => array(
-							"button_caption" => GetMessage("AUTH_REGISTER"),
-							"fields" => array(
-								rtrim(GetMessage("AUTH_NAME"), ":"),
-								rtrim(GetMessage("AUTH_LAST_NAME"), ":"),
-								rtrim(GetMessage("AUTH_LOGIN_MIN"), ":"),
-								rtrim(GetMessage("AUTH_PASSWORD_REQ"), ":"),
-								rtrim(GetMessage("AUTH_EMAIL"), ":"),
-							)
-						),
-					)
-				);?>
-			</div>
+		<div class="bx-authform-formgroup-container auth-consent">
+			<noindex>
+				<label class="bx-filter-param-label">
+					<input type="checkbox" name="USER_PD_CONSENT" id="user_pd_consent" value="Y" required>
+					<span><?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?></span>
+				</label>
+				<div class="auth-consent__error" data-role="consent-error" hidden>Отметьте согласие на обработку персональных данных.</div>
+			</noindex>
 		</div>
-		<noindex><p>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.</p></noindex>
 		<div class="bx-authform-formgroup-container">
 			<input type="submit" class="btn btn-primary" name="Register" value="<?=GetMessage("AUTH_REGISTER")?>" />
 		</div>
@@ -295,16 +276,26 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 			form.USER_LOGIN.value = emailVal;
 		}
 
+		var consentBox = form.querySelector('.auth-consent');
+		var consentError = form.querySelector('[data-role="consent-error"]');
+
+		function markConsent(on) {
+			if (consentBox) consentBox.classList.toggle('is-invalid', !!on);
+			if (consentError) consentError.hidden = !on;
+		}
+
 		function validateRegistrationForm() {
 			var firstInvalid = null;
 			var phone = form.USER_PERSONAL_PHONE;
 			var email = form.USER_EMAIL;
 			var password = form.USER_PASSWORD;
 			var confirm = form.USER_CONFIRM_PASSWORD;
+			var consent = form.USER_PD_CONSENT;
 
 			syncLoginFromEmail();
 
 			[phone, email, password, confirm].forEach(clearInvalid);
+			markConsent(false);
 
 			if (phone && (phone.getAttribute('data-prime-required') === '1' || phone.required)) {
 				if (!isValidRuPhone(phone.value)) {
@@ -347,10 +338,19 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 				}
 			}
 
+			if (consent && !consent.checked) {
+				markConsent(true);
+				if (!firstInvalid) firstInvalid = consent;
+			}
+
 			if (firstInvalid) {
 				try { firstInvalid.focus(); } catch (e) {}
+				if (firstInvalid === consent && consentBox) {
+					try { consentBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {}
+				}
 				return false;
 			}
+
 			return true;
 		}
 
@@ -365,6 +365,9 @@ document.getElementById('bx_auth_secure_conf').style.display = '';
 		form.addEventListener('input', function (e) {
 			if (e.target && e.target.tagName === 'INPUT') {
 				clearInvalid(e.target);
+				if (e.target === form.USER_PD_CONSENT) {
+					markConsent(false);
+				}
 			}
 		}, true);
 

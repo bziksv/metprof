@@ -75,16 +75,6 @@ foreach($arResult['OFFERS'] as $offer){
                </div>
                <? endforeach; ?>
 
-                <? if($arResult['PROPERTIES']['YUTUB']['VALUE']): ?>
-                    <div class="item">
-                        <a data-fancybox data-width="640" data-height="360" href="https://www.youtube.com/watch?v=<?=$arResult['PROPERTIES']['YUTUB']['VALUE']?>">
-                            <span>
-                                <img src="<?=SITE_TEMPLATE_PATH?>/img/video.jpg">
-                            </span>
-                        </a>
-                    </div>
-                <? endif;?>
-
             </div>
             <div class="pg-current">
                <? foreach($arResult['PROPERTIES']['MORE_PHOTO']['VALUE'] as $key => $img):?>
@@ -728,11 +718,11 @@ break;
                                 </div>
                             </div>
 
-                            <div class="modal-form-group checked">
+                            <div class="modal-form-group">
                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                    <input type="checkbox" name="rule" value="Y" checked="checked" required>
+                                    <input type="checkbox" name="rule" value="Y" required>
                                     <span>
-                                        Нажимая на эту кнопку, я даю свое согласие на <a href="/upload/compliance.pdf" target="_blank">обработку персональных данных</a> и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики конфиденциальности</a>.
+                                        <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?>
                                     </span>
                                 </div>
                             </div>

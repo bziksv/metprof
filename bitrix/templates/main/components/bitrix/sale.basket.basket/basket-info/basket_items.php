@@ -49,7 +49,7 @@ if ($normalCount > 0)
 			<a href="/personal/cart/" class="control prev">Редактировать заказ</a>
 
 			<div style="margin-top: 15px; font-size: 12px; line-height: 1.4; color: #666;">
-				Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank" style="text-decoration: underline;">политики обработки персональных данных</a>.
+				<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?>
 			</div>
 
 		</div>

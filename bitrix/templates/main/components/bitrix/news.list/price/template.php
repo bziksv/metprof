@@ -62,8 +62,8 @@ $this->setFrameMode(true);
 				<input type="text" name="phone" placeholder="+7 (473) 234-03-01" class="phone">
 			</div>
 			<div class="inp">
-				<input type="checkbox" name="rule" id="rule" value="Y" checked/>
-				Нажимая на эту кнопку, я даю свое согласие на <a href="/upload/compliance.pdf" target="_blank">обработку персональных данных</a> и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики конфиденциальности</a>.*
+				<input type="checkbox" name="rule" id="rule" value="Y" required>
+				<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?>*
 			</div>
 			<br><br><br>
 			<input class="btn_subscribe" type="submit" value=" Подписаться " />
@@ -76,8 +76,9 @@ $this->setFrameMode(true);
 
 <script>
 	$(function(){
+		$('.btn_subscribe').prop('disabled', !$('#rule').prop('checked'));
 		$('#rule').change(function(){
-			$('.btn_subscribe').attr('disabled',$(this).prop('checked') ? false : true );
+			$('.btn_subscribe').prop('disabled', !$(this).prop('checked'));
 		});
 	});
 </script>

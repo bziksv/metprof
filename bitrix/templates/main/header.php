@@ -20,13 +20,13 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 
 
 		<title><?$APPLICATION->ShowTitle()?></title>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+		<script src="/js/modernizr.min.js"></script>
 		<!-- JavaScript -->
-		<script src="//cdn.jsdelivr.net/alertifyjs/1.10.0/alertify.min.js"></script>
+		<script src="/js/alertify.min.js"></script>
 		<!-- CSS -->
-		<link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.10.0/css/alertify.min.css"/>
+		<link rel="stylesheet" href="/css/alertify.min.css"/>
 		<!-- Default theme -->
-		<link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.10.0/css/themes/default.min.css"/>
+		<link rel="stylesheet" href="/css/alertify-default.min.css"/>
 
 		<meta name="yandex-verification" content="6020089abc854339" />
 		<?
@@ -41,9 +41,7 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		Asset::getInstance()->addString('<meta name="msapplication-TileColor" content="#014075">');
 		Asset::getInstance()->addString('<meta http-equiv="X-UA-Compatible" content="IE=edge">');
 		Asset::getInstance()->addString('<meta name="viewport" content="width=device-width, initial-scale=1">');
-		Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&amp;subset=cyrillic,latin-ext" rel="stylesheet">');
-		Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i&amp;subset=cyrillic-ext,latin-ext" rel="stylesheet">');
-
+		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/google-fonts.css');
 		Asset::getInstance()->addCss('/bitrix/css/main/font-awesome.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/vendor.min.css');
 		Asset::getInstance()->addCss(SITE_TEMPLATE_PATH.'/css/slick.css');
@@ -123,7 +121,6 @@ $noh1    = $pages[1] == 'personal' || $pages[1] == 'price' || ($pages[1] == 'cat
 		}
 		?>
 
-	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	</head>
    	<body>
    		<?$APPLICATION->ShowPanel()?>

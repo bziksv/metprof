@@ -151,15 +151,17 @@ if($cntBasketItems > 0):
 				</label>
 			</div>
 
-			<div class="agent agent--consent">
-				<label>
-					<input type="checkbox" name="rule" id="rule" value="Y"/>
-					<span>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.</span>
-				</label>
-				<div class="agent__error" data-role="rule-error" hidden>Отметьте согласие с политикой обработки персональных данных.</div>
-			</div>
+			<div class="form_registration__actions">
+				<div class="agent agent--consent">
+					<label>
+						<input type="checkbox" name="rule" id="rule" value="Y" required>
+						<span><?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?></span>
+					</label>
+					<div class="agent__error" data-role="rule-error" hidden>Отметьте согласие на обработку персональных данных.</div>
+				</div>
 
-			<input type="submit" class="registrate" value="<?echo GetMessage("STOF_NEXT_STEP")?>">
+				<input type="submit" class="registrate" value="<?echo GetMessage("STOF_NEXT_STEP")?>">
+			</div>
 			<input type="hidden" name="do_register" value="Y">
 
 		</div>
@@ -307,18 +309,24 @@ if($cntBasketItems > 0):
 					if (!first) first = !pw.length ? password : confirm;
 				}
 
-				if (rule && !rule.checked) {
-					markRule(true);
-					if (!first) first = rule;
-				}
+			if (rule && !rule.checked) {
+				markRule(true);
+				if (!first) first = ruleBox || rule;
+			}
 
-				if (first) {
-					try { first.focus(); } catch (e) {}
-					if (first === rule && ruleBox) {
-						try { ruleBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {}
+			if (first) {
+				try {
+					if (first.focus) first.focus();
+					else if (first.querySelector) {
+						var cb = first.querySelector('input[type="checkbox"]');
+						if (cb) cb.focus();
 					}
-					return false;
+				} catch (e) {}
+				if (first === ruleBox || first === rule) {
+					try { ruleBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e2) {}
 				}
+				return false;
+			}
 				return true;
 			}
 

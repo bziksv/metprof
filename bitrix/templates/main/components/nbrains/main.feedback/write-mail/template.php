@@ -58,12 +58,9 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
      		</span>
 		<? elseif($field['PROPERTY_TYPE'] == "L" AND $field['CODE'] != "DESC"):?>
 			<div class="rule">
-				<input type="checkbox" class="fio" name="<?=$field['CODE']?>" value="Y" checked>
+				<input type="checkbox" class="fio" name="<?=$field['CODE']?>" value="Y" required>
 				<span>
-					Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.
-<!--					Я прочитал правила-->
-<!--					<a href="#" class="show-popup" data-id="--><?//=$arParams["IBLOCK_TYPE"].$arParams["IBLOCK_ID"]?><!--">Правила</a>-->
-<!--					и даю свое согласие на обработку персональных данных-->
+					<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?>
 				</span>
 			</div>
 		<? elseif($field['CODE'] == "DESC"):?>
@@ -79,13 +76,6 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
 
 
 
-			<?if($arParams["USE_CAPTCHA"] == "Y"):?>
-				<div class="mf-captcha">
-					<?/*<div class="g-recaptcha" data-sitekey="6LddjoopAAAAAAfUXWqqqdUyh-C_79qKA5EbhKSj"></div>*/?>
-<div class="g-recaptcha" data-sitekey="6LeUbdsqAAAAAEPIqSZ3jxKfu3PI4OYMfeTvjC-K"></div>
-
-				</div>
-			<?endif;?>
 
 
 		<span class="line submit" >

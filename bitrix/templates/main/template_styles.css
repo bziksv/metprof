@@ -36,21 +36,6 @@
 
 
 
-.g-recaptcha-response {
-  display: block !important;
-  position: absolute;
-  margin: -78px 0 0 0 !important;
-  width: 302px !important;
-  height: 76px !important;
-  z-index: -999999;
-  opacity: 0;
-}
-
-.mf-captcha {
-    margin: 10px auto;
-    max-width: 300px;
-}
-
 .slider_product_b .slick-arrow{position:absolute;display:block;margin:0;padding:0;width:50px;height:60px;top:50%;margin-top:-30px;text-indent:-9999px;cursor:pointer;border:0;outline:0;-webkit-border-radius:0;border-radius:0;background-color:#e5eff8;-webkit-backface-visibility:visible;background-image:url('/bitrix/templates/main/img/product_arrow.png');-webkit-transition:background-color 200ms ease;-moz-transition:background-color 200ms ease;-ms-transition:background-color 200ms ease;-o-transition:background-color 200ms ease;transition:background-color 200ms ease}
 
 .slider_product_b .slick-arrow.slick-prev{left:-51px;background-position:0 0}

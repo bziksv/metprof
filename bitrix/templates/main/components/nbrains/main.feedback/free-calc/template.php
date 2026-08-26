@@ -54,21 +54,12 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
 		<a href="#" class="attach" style="position: relative;"><input style="opacity: 0;position: absolute;min-width: 495px;cursor: pointer;" name="FILE" type="file" />Прикрепите план здания или техническое задание <span>(файл до 50 мб)</span></a>
 
 		<div class="rule">
-			<input type="checkbox" class="fio" name="RULE" value="Y" checked>
+			<input type="checkbox" class="fio" name="RULE" value="Y" required>
 			<span>
-				Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных и соглашаюсь с условиями <a href="/upload/politics.pdf" target="_blank">политики обработки персональных данных</a>.
-<!--					Я прочитал правила-->
-<!--					<a href="#" class="show-popup" data-id="--><?//=$arParams["IBLOCK_TYPE"].$arParams["IBLOCK_ID"]?><!--">Правила</a>-->
-<!--					и даю свое согласие на обработку персональных данных-->
+				<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/legal_helpers.php'; echo metprofLegalFormConsentLabel(); ?>
 			</span>
 		</div>
 
-			<?if($arParams["USE_CAPTCHA"] == "Y"):?>
-				<div class="mf-captcha">
- <?/*<div class="g-recaptcha" data-sitekey="6LddjoopAAAAAAfUXWqqqdUyh-C_79qKA5EbhKSj"></div>*/?>
-<div class="g-recaptcha" data-sitekey="6LeUbdsqAAAAAEPIqSZ3jxKfu3PI4OYMfeTvjC-K"></div>
-				</div>
-			<?endif;?>
 
 		<input type="hidden" name="PARAMS_HASH" value="<?=$arResult["PARAMS_HASH"]?>">
         <input type="submit" class="send roi_free_calc" name="submit" value="<?=GetMessage("MFT_SUBMIT")?>">
