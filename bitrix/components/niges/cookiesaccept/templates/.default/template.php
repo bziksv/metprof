@@ -11,7 +11,7 @@ if (method_exists($this, 'setFrameMode')) {
 	$this->setFrameMode(true);
 }
 
-$this->addExternalCss($this->GetFolder().'/style.css');
+$this->addExternalCss($this->GetFolder().'/style.css?v=20260826');
 
 $cookieName = htmlspecialcharsbx($arResult['COOKIE_NAME']);
 $textVer = (int)$arResult['TEXTVER'];

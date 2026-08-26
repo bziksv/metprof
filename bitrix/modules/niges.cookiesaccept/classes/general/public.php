@@ -26,12 +26,23 @@ class CNigesCookiesAcceptPublic
 			return;
 		}
 
+		ob_start();
 		$APPLICATION->IncludeComponent(
 			'niges:cookiesaccept',
 			'.default',
 			array(),
 			false,
 			array('HIDE_ICONS' => 'Y')
+		);
+		$html = (string)ob_get_clean();
+		if ($html === '') {
+			return;
+		}
+
+		\Bitrix\Main\Page\Asset::getInstance()->addString(
+			$html,
+			true,
+			\Bitrix\Main\Page\AssetLocation::BODY_END
 		);
 	}
 }

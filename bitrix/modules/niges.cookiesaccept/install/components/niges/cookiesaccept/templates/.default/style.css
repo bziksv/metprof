@@ -122,73 +122,92 @@ padding-right: 1%;
 }
 
 /* ============================================ */
-/* КАСТОМНЫЕ СТИЛИ (из старой версии)           */
+/* Кастомная компактная полоска cookie           */
 /* ============================================ */
 
-/* Кнопка принятия куки */
-#nca-cookiesaccept-line-accept-btn {
-background-color: #66B3D4 !important;
-color: #ffffff !important;
-border: none !important;
-border-radius: 12px !important;
-padding: 18px 30px !important;
-font-size: 20px !important;
-font-weight: 500 !important;
-line-height: 1 !important;
-cursor: pointer !important;
-transition: all 0.2s ease !important;
-box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
-white-space: nowrap !important;
-}
-#nca-cookiesaccept-line-accept-btn:hover {
-background-color: #C82C30 !important;
-transform: translateY(-1px) !important;
-box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
-}
-#nca-cookiesaccept-line-accept-btn:active {
-transform: translateY(0) !important;
-box-shadow: 0 1px 4px rgba(37, 99, 235, 0.25) !important;
+.nca-cookiesaccept-line {
+	height: auto !important;
+	max-height: none !important;
+	padding: 12px 16px !important;
 }
 
-/* Адаптив для мобильных (до 767px) */
+.nca-cookiesaccept-line > .nca-bar {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 16px !important;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.nca-cookiesaccept-line-text,
+.nca-cookiesaccept-line-actions {
+	flex: 0 1 auto !important;
+	padding: 0 !important;
+	width: auto !important;
+}
+
+.nca-cookiesaccept-line-text {
+	flex: 1 1 auto !important;
+	max-width: 920px;
+	font-size: 14px !important;
+	line-height: 1.45 !important;
+}
+
+#nca-cookiesaccept-line-accept-btn {
+	background-color: #0060bf !important;
+	color: #fff !important;
+	border: none !important;
+	border-radius: 8px !important;
+	padding: 10px 20px !important;
+	font-size: 14px !important;
+	font-weight: 500 !important;
+	line-height: 1.2 !important;
+	cursor: pointer !important;
+	transition: background-color 0.2s ease !important;
+	box-shadow: none !important;
+	white-space: nowrap !important;
+}
+
+#nca-cookiesaccept-line-accept-btn:hover {
+	background-color: #1b94e9 !important;
+	transform: none !important;
+	box-shadow: none !important;
+}
+
+#nca-cookiesaccept-line-accept-btn:active {
+	transform: none !important;
+	box-shadow: none !important;
+}
+
 @media screen and (max-width: 767px) {
-    .nca-cookiesaccept-line {
-        padding: 10px 12px !important;
-        bottom: calc(16px + env(safe-area-inset-bottom, 16px)) !important;
-        max-height: none !important;
-        overflow-y: visible !important;
-    }
-    
-    .nca-cookiesaccept-line > .nca-bar {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 8px !important;
-        text-align: center !important;
-    }
-    
-    /* Сбрасываем flex, чтобы 240px не становилось высотой */
-    .nca-cookiesaccept-line-text,
-    .nca-cookiesaccept-line-actions {
-        flex: none !important;
-        padding: 0 !important;
-        width: 100% !important;
-    }
-    
-    /* Компактный, но читаемый текст уведомления */
-    .nca-cookiesaccept-line-text {
-        font-size: 15px !important;
-        line-height: 1.55 !important;
-        margin: 0 !important;
-    }
-    
-    /* Кнопка: удобная для пальца, но не громоздкая */
-    #nca-cookiesaccept-line-accept-btn {
-        padding: 10px 20px !important;
-        font-size: 14px !important;
-        min-height: 44px !important;
-        width: 100% !important;
-        max-width: 280px !important;
-        margin: 0 auto !important;
-        white-space: normal !important;
-    }
+	.nca-cookiesaccept-line {
+		padding: 10px 12px !important;
+		bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+	}
+
+	.nca-cookiesaccept-line > .nca-bar {
+		flex-direction: column !important;
+		align-items: stretch !important;
+		gap: 10px !important;
+		text-align: center !important;
+	}
+
+	.nca-cookiesaccept-line-text {
+		font-size: 13px !important;
+		line-height: 1.5 !important;
+		max-width: none !important;
+	}
+
+	#nca-cookiesaccept-line-accept-btn {
+		width: 100% !important;
+		max-width: 280px !important;
+		margin: 0 auto !important;
+		min-height: 44px !important;
+		white-space: normal !important;
+	}
 }
