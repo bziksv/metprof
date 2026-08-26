@@ -15,15 +15,9 @@ if ($arResult['TEXTBTN'] === '') {
 
 if ($arResult['MAINTEXT'] === '') {
 	$arResult['MAINTEXT'] = CNigesCookiesAcceptHelper::sanitizeHtml(
-		'На сайте используются cookie-файлы для работы, статистики и улучшения сервиса. '
-		. 'Продолжая пользоваться сайтом, вы соглашаетесь на обработку персональных данных на условиях '
-		. '<a href="/legal/metprof-soglasie-obrabotki-pd/" rel="nofollow" target="_blank">Согласия на обработку персональных данных</a> '
-		. 'и подтверждаете ознакомление с '
-		. '<a href="/legal/metprof-politika-obrabotki-pd/" rel="nofollow" target="_blank">Политикой обработки персональных данных</a>. '
-		. 'Подробнее о cookie — в '
-		. '<a href="/legal/metprof-politika-cookie/" rel="nofollow" target="_blank">Политике использования cookie-файлов</a>. '
-		. 'На сайте также действуют '
-		. '<a href="/legal/metprof-pravila-rekomendatelnyh-tehnologiy/" rel="nofollow" target="_blank">рекомендательные технологии</a>.'
+		'Данный сайт применяет технологию cookie для аналитических целей и персонализации рекламы. '
+		. 'Оставаясь на странице, вы подтверждаете своё согласие в соответствии с действующей '
+		. '<a href="/legal/metprof-politika-cookie/" rel="nofollow" target="_blank">Политикой использования cookie-файлов</a>.'
 	);
 }
 
